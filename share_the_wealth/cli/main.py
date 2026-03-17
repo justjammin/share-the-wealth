@@ -134,16 +134,44 @@ def cmd_execute(funds_path: Path | None, dry_run: bool, order_size: float) -> No
             executed.append({"symbol": m.executable_symbol})
 
 
-def cmd_run(host: str, port: int) -> None:
+def cmd_run(host: str, port: int, reload: bool = False) -> None:
     import uvicorn
-    from share_the_wealth.api import create_app
-    app = create_app()
-    uvicorn.run(app, host=host, port=port)
+    if reload:
+        uvicorn.run(
+            "share_the_wealth.api.app:create_app",
+            host=host,
+            port=port,
+            reload=True,
+            factory=True,
+        )
+    else:
+        from share_the_wealth.api import create_app
+        uvicorn.run(create_app(), host=host, port=port)
+
+
+def cmd_help() -> None:
+    console.print("[bold]Share the Wealth[/bold] - Track politician trades, mirror with your funds\n")
+    console.print("[bold]Commands:[/bold]")
+    console.print("  [cyan]stw track[/cyan]     Show recent Congress trades")
+    console.print("  [cyan]stw map[/cyan]       Map trades to your funds (my_funds.txt)")
+    console.print("  [cyan]stw execute[/cyan]   Execute mirrored trades via Alpaca")
+    console.print("  [cyan]stw run[/cyan]       Start web UI (http://localhost:8007)")
+    console.print("  [cyan]stw run --reload[/cyan]  Auto-reload on file changes (dev)")
+    console.print("  [cyan]stw help[/cyan]     Show this help\n")
+    console.print("[bold]Options:[/bold]")
+    console.print("  track -n 50        Limit trades per chamber")
+    console.print("  map -f funds.txt   Custom funds list")
+    console.print("  execute --dry-run Preview without placing orders")
+    console.print("  execute -s 100    Order size in dollars\n")
+    console.print("[dim]Also: make help | just help[/dim]")
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Share the Wealth - Mirror politician trades")
     sub = parser.add_subparsers(dest="cmd", required=True)
+
+    help_p = sub.add_parser("help", help="Show help and options")
+    help_p.set_defaults(func=lambda a: cmd_help())
 
     track_p = sub.add_parser("track", help="Show recent politician trades")
     track_p.add_argument("-n", "--limit", type=int, default=50, help="Trades per chamber")
@@ -162,8 +190,9 @@ def main() -> None:
 
     run_p = sub.add_parser("run", help="Start web UI server")
     run_p.add_argument("--host", default="0.0.0.0", help="Host to bind")
-    run_p.add_argument("-p", "--port", type=int, default=8000, help="Port")
-    run_p.set_defaults(func=lambda a: cmd_run(a.host, a.port))
+    run_p.add_argument("-p", "--port", type=int, default=8007, help="Port")
+    run_p.add_argument("--reload", action="store_true", help="Auto-reload on file changes (for dev)")
+    run_p.set_defaults(func=lambda a: cmd_run(a.host, a.port, a.reload))
 
     args = parser.parse_args()
     args.func(args)

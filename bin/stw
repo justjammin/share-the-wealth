@@ -1,0 +1,4 @@
+#!/usr/bin/env sh
+# Wrapper so you can run ./bin/stw or add ./bin to PATH
+cd "$(dirname "$0")/.."
+exec ./venv/bin/stw "$@"

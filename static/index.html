@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>MIRRORTRADE · Portfolio Mirror Tracker</title>
+  <title>SHARE THE WEALTH · Portfolio Mirror Tracker</title>
   <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
   <style>
     :root {
@@ -52,13 +52,17 @@
     .grid-2 { display: grid; grid-template-columns: 280px 1fr; gap: 16px; }
     .grid-2-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+    .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
+    .loading-spinner-sm { width: 20px; height: 20px; border-width: 2px; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; gap: 16px; color: var(--muted); font-size: 13px; }
   </style>
 </head>
 <body>
   <div id="header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px;">
     <div>
       <div style="font-size: 22px; font-weight: 900; letter-spacing: -0.5px;">
-        <span style="color: var(--accent)">MIRROR</span>TRADE
+        <span style="color: var(--accent)">SHARE</span>THE<span style="color: var(--accent)">WEALTH</span>
       </div>
       <div style="font-size: 11px; color: var(--muted); letter-spacing: 2px; margin-top: 2px;">
         PORTFOLIO MIRROR TRACKER · CONGRESS & 13F
@@ -69,6 +73,7 @@
       <div style="background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; font-size: 11px; color: var(--muted);">
         Last sync: <span id="sync-time">--</span>
       </div>
+      <button id="btn-refresh" class="btn" style="background: var(--accent); color: #000; border: none; border-radius: 8px; padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer;">↻ Fresh</button>
     </div>
   </div>
 
@@ -87,7 +92,11 @@
 
   <script>
     const API = '';
-    let state = { tab: 'politicians', politicians: [], funds: [], mirrored: { politicians: [], funds: [] }, prices: {}, portfolio: [] };
+    let state = { tab: 'politicians', politicians: [], funds: [], mirrored: { politicians: [], funds: [] }, prices: {}, portfolio: [], loading: true, portfolioLoading: false, refreshing: false };
+
+    function loadingHtml(msg) {
+      return `<div class="loading-placeholder"><div class="loading-spinner"></div><span>${msg || 'Loading…'}</span></div>`;
+    }
 
     function fmtCurrency(n) {
       if (n >= 1e9) return '$' + (n/1e9).toFixed(1) + 'B';
@@ -103,6 +112,8 @@
     }
 
     async function load() {
+      state.loading = true;
+      render();
       try {
         const [polRes, fundRes, mirRes] = await Promise.all([
           fetchJson('/api/politicians'),
@@ -125,6 +136,7 @@
         console.error(e);
         document.getElementById('sync-time').textContent = 'error';
       }
+      state.loading = false;
       render();
     }
 
@@ -275,10 +287,72 @@
       }
       const totalValue = positions.reduce((s, p) => s + p.value, 0);
       const avgPl = positions.reduce((s, p) => s + p.pl, 0) / positions.length;
+      const bySource = {};
+      positions.forEach(p => {
+        const key = p.type === 'Politician' ? 'politicians' : 'funds';
+        if (!bySource[key]) bySource[key] = {};
+        if (!bySource[key][p.source]) bySource[key][p.source] = [];
+        bySource[key][p.source].push(p);
+      });
+      const polSection = (state.mirrored.politicians || []).length > 0 && bySource.politicians ? `
+        <div class="card" style="margin-bottom: 16px;">
+          <div style="display: flex; align-items: center; gap: 8; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
+            <span style="font-size: 14px;">🏛</span>
+            <div style="font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 1px;">POLITICIANS</div>
+          </div>
+          ${Object.entries(bySource.politicians).map(([source, pos]) => `
+            <div style="margin-bottom: 16px;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px;">${source}</div>
+              <table>
+                <thead><tr><th>TICKER</th><th>SHARES</th><th>AVG COST</th><th>CURRENT</th><th>P&L</th><th>VALUE</th></tr></thead>
+                <tbody>
+                  ${pos.map(p => `
+                    <tr>
+                      <td style="font-weight: 800; color: var(--accent); font-size: 14px;">${p.ticker}</td>
+                      <td>${p.shares}</td>
+                      <td>$${p.cost.toFixed(2)}</td>
+                      <td>$${p.current.toFixed(2)}</td>
+                      <td style="color: ${p.pl >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700;">${fmtPct(p.pl)}</td>
+                      <td>${fmtCurrency(p.value)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `).join('')}
+        </div>
+      ` : '';
+      const fundSection = (state.mirrored.funds || []).length > 0 && bySource.funds ? `
+        <div class="card">
+          <div style="display: flex; align-items: center; gap: 8; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
+            <span style="font-size: 14px;">🏦</span>
+            <div style="font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 1px;">HEDGE FUNDS</div>
+          </div>
+          ${Object.entries(bySource.funds).map(([source, pos]) => `
+            <div style="margin-bottom: 16px;">
+              <div style="font-size: 13px; font-weight: 700; color: var(--yellow); margin-bottom: 8px;">${source}</div>
+              <table>
+                <thead><tr><th>TICKER</th><th>SHARES</th><th>AVG COST</th><th>CURRENT</th><th>P&L</th><th>VALUE</th></tr></thead>
+                <tbody>
+                  ${pos.map(p => `
+                    <tr>
+                      <td style="font-weight: 800; color: var(--accent); font-size: 14px;">${p.ticker}</td>
+                      <td>${p.shares}</td>
+                      <td>$${p.cost.toFixed(2)}</td>
+                      <td>$${p.current.toFixed(2)}</td>
+                      <td style="color: ${p.pl >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700;">${fmtPct(p.pl)}</td>
+                      <td>${fmtCurrency(p.value)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            </div>
+          `).join('')}
+        </div>
+      ` : '';
       return `
         <div>
           <div class="grid-3" style="margin-bottom: 20;">
-
             <div class="card" style="padding: 14px 18px;">
               <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 6px;">TOTAL VALUE</div>
               <div style="font-size: 22px; font-weight: 800; color: var(--accent);">${fmtCurrency(totalValue)}</div>
@@ -292,25 +366,8 @@
               <div style="font-size: 22px; font-weight: 800; color: ${avgPl >= 0 ? 'var(--accent)' : 'var(--red)'};">${fmtPct(avgPl)}</div>
             </div>
           </div>
-          <div class="card">
-            <table>
-              <thead><tr><th>TICKER</th><th>SOURCE</th><th>TYPE</th><th>SHARES</th><th>AVG COST</th><th>CURRENT</th><th>P&L</th><th>VALUE</th></tr></thead>
-              <tbody>
-                ${positions.map(p => `
-                  <tr>
-                    <td style="font-weight: 800; color: var(--accent); font-size: 14px;">${p.ticker}</td>
-                    <td>${p.source}</td>
-                    <td><span class="pill ${p.type === 'Politician' ? 'pill-blue' : 'pill-yellow'}">${p.type === 'Politician' ? 'CONGRESS' : 'FUND'}</span></td>
-                    <td>${p.shares}</td>
-                    <td>$${p.cost.toFixed(2)}</td>
-                    <td>$${p.current.toFixed(2)}</td>
-                    <td style="color: ${p.pl >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700;">${fmtPct(p.pl)}</td>
-                    <td>${fmtCurrency(p.value)}</td>
-                  </tr>
-                `).join('')}
-              </tbody>
-            </table>
-          </div>
+          ${polSection}
+          ${fundSection}
         </div>
       `;
     }
@@ -353,11 +410,29 @@
         mirrorBadge.style.display = 'none';
       }
 
+      if (state.tab === 'politicians' && !state.selectedPolitician && (state.mirrored.politicians || []).length > 0) {
+        state.selectedPolitician = state.politicians.find(p => state.mirrored.politicians.includes(p.name)) || null;
+      }
+      if (state.tab === 'funds' && !state.selectedFund && (state.mirrored.funds || []).length > 0) {
+        state.selectedFund = state.funds.find(f => state.mirrored.funds.includes(f.name)) || null;
+      }
+
       let html = '';
-      if (state.tab === 'politicians') html = renderPoliticians();
-      else if (state.tab === 'funds') html = renderFunds();
-      else if (state.tab === 'portfolio') html = renderPortfolio();
-      else if (state.tab === 'ai') html = renderAI();
+      if (state.loading && (state.politicians.length === 0 && state.funds.length === 0)) {
+        html = loadingHtml('Fetching politicians & hedge funds…');
+      } else if (state.refreshing) {
+        html = loadingHtml('Pulling fresh data…');
+      } else if (state.tab === 'portfolio' && state.portfolioLoading) {
+        html = loadingHtml('Loading portfolio…');
+      } else if (state.tab === 'politicians') {
+        html = renderPoliticians();
+      } else if (state.tab === 'funds') {
+        html = renderFunds();
+      } else if (state.tab === 'portfolio') {
+        html = renderPortfolio();
+      } else if (state.tab === 'ai') {
+        html = renderAI();
+      }
 
       document.getElementById('content').innerHTML = html;
 
@@ -396,7 +471,12 @@
 
       if (state.tab === 'portfolio' && !state.portfolioLoaded) {
         state.portfolioLoaded = true;
-        loadPortfolio().then(() => { render(); });
+        state.portfolioLoading = true;
+        render();
+        loadPortfolio().then(() => {
+          state.portfolioLoading = false;
+          render();
+        });
       }
 
       if (state.tab === 'ai') {
@@ -432,16 +512,25 @@
             state.chatMessages.push({ role: 'user', text: q });
             chatMessages.innerHTML += `<div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--accentDim); color: var(--accent); align-self: flex-end; max-width: 90%; border: 1px solid var(--accentMuted);">${q}</div>`;
             chatSend.disabled = true;
+            const loadingEl = document.createElement('div');
+            loadingEl.id = 'chat-loading';
+            loadingEl.style.cssText = 'padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--surface); align-self: flex-start; max-width: 90%; border: 1px solid var(--border); display: flex; align-items: center; gap: 8px;';
+            loadingEl.innerHTML = '<div class="loading-spinner loading-spinner-sm"></div><span style="color: var(--muted);">Thinking…</span>';
+            chatMessages.appendChild(loadingEl);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
             try {
               const res = await fetchJson('/api/ai/chat', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({ messages: state.chatMessages.slice(0, -1), question: q }),
               });
+              loadingEl.remove();
               state.chatMessages.push({ role: 'assistant', text: res.reply });
               chatMessages.innerHTML += `<div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--surface); color: var(--text); align-self: flex-start; max-width: 90%; border: 1px solid var(--border);">${res.reply}</div>`;
             } catch (e) {
+              loadingEl.remove();
               state.chatMessages.push({ role: 'assistant', text: 'Error: ' + e.message });
+              chatMessages.innerHTML += `<div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--surface); color: var(--red); align-self: flex-start; max-width: 90%; border: 1px solid var(--border);">Error: ${e.message}</div>`;
             }
             chatSend.disabled = false;
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -459,6 +548,33 @@
         render();
       };
     });
+
+    const btnRefresh = document.getElementById('btn-refresh');
+    if (btnRefresh) {
+      btnRefresh.onclick = async () => {
+        btnRefresh.disabled = true;
+        btnRefresh.textContent = '⟳';
+        state.refreshing = true;
+        render();
+        try {
+          const res = await fetchJson('/api/politicians/refresh', { method: 'POST' });
+          state.politicians = res.politicians || [];
+          document.getElementById('sync-time').textContent = 'just now';
+          const symbols = [...new Set(state.politicians.flatMap(p => p.trades.map(t => t.ticker)))];
+          if (symbols.length) {
+            const priceRes = await fetchJson('/api/prices?symbols=' + symbols.join(','));
+            state.prices = { ...state.prices, ...(priceRes.prices || {}) };
+          }
+        } catch (e) {
+          console.error(e);
+          document.getElementById('sync-time').textContent = 'error';
+        }
+        state.refreshing = false;
+        btnRefresh.disabled = false;
+        btnRefresh.textContent = '↻ Fresh';
+        render();
+      };
+    }
 
     load();
   </script>

@@ -38,12 +38,20 @@ class TradeFetcher:
                 tx_type = "Sale"
             else:
                 tx_type = tx_type or "Purchase"
+        first = raw.get("firstName", "")
+        last = raw.get("lastName", "")
+        politician_name = (
+            raw.get("politician")
+            or raw.get("representative")
+            or raw.get("senator")
+            or (f"{first} {last}".strip() if (first or last) else "")
+        )
         return PoliticianTrade(
             symbol=symbol,
             transaction_type=tx_type,
             transaction_date=str(raw.get("transactionDate", raw.get("transaction_date", ""))),
             disclosure_date=str(raw.get("disclosureDate", raw.get("disclosure_date", ""))),
-            politician_name=str(raw.get("politician", raw.get("representative", raw.get("senator", "")))),
+            politician_name=str(politician_name or "Unknown"),
             chamber=chamber,
             amount_range=raw.get("amount") or raw.get("amountRange"),
             asset_type=raw.get("assetType") or raw.get("asset_type"),

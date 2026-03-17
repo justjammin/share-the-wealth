@@ -33,17 +33,27 @@ source venv/bin/activate
 
 ## Usage
 
-After `./setup.sh` and `source venv/bin/activate`:
+After `./setup.sh`:
 
-| Command | Shorthand |
-|---------|-----------|
-| `stw track` | `make track` or `just track` |
-| `stw map` | `make map` or `just map` |
-| `stw execute --dry-run` | `make execute` or `just execute` |
-| `stw execute` | `make execute-live` or `just execute-live` |
-| `stw run` | `make server` or `just server` |
+| Command | Usage |
+|---------|-------|
+| `make track` / `just track` | Show Congress trades |
+| `make map` / `just map` | Map trades to funds |
+| `make execute` / `just execute` | Preview orders |
+| `make server` / `just server` | Web UI |
+| `./bin/stw help` | Help (no venv activate needed) |
 
-**Web UI:** `stw run` (or `make server`) → http://localhost:8000
+**Or** `source venv/bin/activate` then use `stw` directly.
+
+**Web UI:** `make server` → http://localhost:8007
+
+## Data Sources
+
+| Data | API | Fallback |
+|------|-----|----------|
+| Congress trades | Financial Modeling Prep (FMP_API_KEY) | Curated politicians |
+| Hedge fund 13F | [Forms13F](https://forms13f.com) (free, no key) | Curated funds |
+| Prices | yfinance | - |
 
 ## Project Structure
 
@@ -56,7 +66,7 @@ share-the-wealth/
 ├── share_the_wealth/
 │   ├── config/         # Settings (env)
 │   ├── models/         # PoliticianTrade, MappedTrade, HedgeFund, OrderResult
-│   ├── sources/        # TradeFetcher, HedgeFundRepository, PriceService
+│   ├── sources/        # TradeFetcher, HedgeFundFetcher, HedgeFundRepository, PriceService
 │   ├── analysis/       # FundAnalyzer
 │   ├── execution/      # Broker (Alpaca)
 │   ├── ai/             # AIAnalyst (Anthropic)

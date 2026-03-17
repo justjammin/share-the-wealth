@@ -6,6 +6,7 @@ python3 -m venv venv
 test -f .env || cp .env.example .env
 echo ""
 echo "Done. Next steps:"
-echo "  1. source venv/bin/activate"
-echo "  2. Edit .env with your API keys"
-echo "  3. stw track   # or: make track / just track"
+echo "  1. Edit .env with your API keys"
+echo "  2. make track   # or: ./bin/stw track | just track"
+echo ""
+echo "  (Or: source venv/bin/activate  then  stw track)"
