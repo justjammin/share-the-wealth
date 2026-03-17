@@ -17,7 +17,8 @@ _price_svc = PriceService()
 @router.get("/politicians")
 def get_politicians(fresh: bool = False):
     try:
-        return {"politicians": _politician_svc.get_politicians_with_trades(fresh=fresh)}
+        from share_the_wealth.api.services import _politician_using_fallback
+        return {"politicians": _politician_svc.get_politicians_with_trades(fresh=fresh), "using_fallback": _politician_using_fallback}
     except Exception as e:
         raise HTTPException(500, str(e))
 
@@ -27,9 +28,10 @@ def refresh_politicians():
     if not fmp_budget.can_fresh():
         raise HTTPException(429, "Fresh pull budget exhausted for today (50 calls reserved)")
     try:
+        from share_the_wealth.api.services import _politician_using_fallback
         data = _politician_svc.get_politicians_with_trades(fresh=True)
         sched, fresh = fmp_budget.remaining()
-        return {"politicians": data, "remaining": {"scheduled": sched, "fresh": fresh}}
+        return {"politicians": data, "remaining": {"scheduled": sched, "fresh": fresh}, "using_fallback": _politician_using_fallback}
     except Exception as e:
         raise HTTPException(500, str(e))
 
@@ -42,7 +44,8 @@ def get_budget():
 
 @router.get("/hedge-funds")
 def get_hedge_funds():
-    return {"funds": _fund_repo.list_all()}
+    res = _fund_repo.list_all()
+    return {"funds": res["funds"], "using_fallback": res.get("using_fallback", False)}
 
 
 @router.get("/prices")

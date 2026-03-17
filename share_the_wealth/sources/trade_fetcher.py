@@ -67,7 +67,7 @@ class TradeFetcher:
         data = self._fetch("house-latest", {"limit": limit, "page": page})
         return [t for r in data if (t := self._normalize_trade(r, "House"))]
 
-    def fetch_all(self, limit_per_chamber: int = 50) -> list[PoliticianTrade]:
+    def fetch_all(self, limit_per_chamber: int = 25) -> list[PoliticianTrade]:
         senate = self.fetch_senate(limit=limit_per_chamber)
         house = self.fetch_house(limit=limit_per_chamber)
         return senate + house

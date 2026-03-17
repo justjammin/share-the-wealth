@@ -50,23 +50,26 @@ CURATED_FUNDS: list[HedgeFund] = [
 
 
 class HedgeFundRepository:
-    def list_all(self) -> list[dict]:
+    def list_all(self) -> dict:
         try:
             fetched = fetch_all_funds()
             if fetched:
-                return fetched
+                return {"funds": fetched, "using_fallback": False}
         except Exception:
             pass
-        return [
-            {
-                "name": f.name,
-                "manager": f.manager,
-                "avatar": f.avatar,
-                "aum": f.aum,
-                "holdings": [
-                    {"ticker": h.ticker, "pct": h.pct, "shares": h.shares, "value": h.value, "change": h.change}
-                    for h in f.holdings
-                ],
-            }
-            for f in CURATED_FUNDS
-        ]
+        return {
+            "funds": [
+                {
+                    "name": f.name,
+                    "manager": f.manager,
+                    "avatar": f.avatar,
+                    "aum": f.aum,
+                    "holdings": [
+                        {"ticker": h.ticker, "pct": h.pct, "shares": h.shares, "value": h.value, "change": h.change}
+                        for h in f.holdings
+                    ],
+                }
+                for f in CURATED_FUNDS
+            ],
+            "using_fallback": True,
+        }

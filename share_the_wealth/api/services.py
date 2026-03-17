@@ -10,6 +10,8 @@ from share_the_wealth.api.state import MirrorState
 from share_the_wealth.api.fmp_budget import FMPCache, fmp_budget
 
 # Fallback when FMP API fails or returns empty (no key, rate limit, etc.)
+_politician_using_fallback = False
+
 CURATED_POLITICIANS = [
     {
         "name": "Nancy Pelosi",
@@ -94,8 +96,9 @@ class PoliticianService:
         }
 
     def _fetch_politicians_internal(self) -> list[dict]:
+        global _politician_using_fallback
         try:
-            trades = self._fetcher.fetch_all(limit_per_chamber=50)
+            trades = self._fetcher.fetch_all(limit_per_chamber=25)
         except Exception:
             trades = []
         symbols = list({t.symbol for t in trades})
@@ -120,7 +123,9 @@ class PoliticianService:
                 "trades": [self._trade_to_api(t, prices.get(t.symbol)) for t in pol_trades[:10]],
             })
         if not result:
+            _politician_using_fallback = True
             return CURATED_POLITICIANS
+        _politician_using_fallback = False
         return result
 
     def get_politicians_with_trades(self, fresh: bool = False) -> list[dict]:
@@ -144,7 +149,7 @@ class PortfolioService:
 
     def get_positions(self) -> list[dict]:
         politicians = self._politician_svc.get_politicians_with_trades()
-        funds = self._fund_repo.list_all()
+        funds = self._fund_repo.list_all()["funds"]
         pol_mirrored = self._mirror.politicians
         fund_mirrored = self._mirror.funds
 
@@ -205,7 +210,7 @@ class ContextBuilder:
         pol_names = ", ".join(self._mirror.politicians or ["none"])
         fund_names = ", ".join(self._mirror.funds or ["none"])
         politicians = self._politician_svc.get_politicians_with_trades()
-        funds = self._fund_repo.list_all()
+        funds = self._fund_repo.list_all()["funds"]
 
         pol_trades = []
         for p in politicians:

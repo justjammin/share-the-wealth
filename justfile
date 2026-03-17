@@ -32,11 +32,11 @@ install:
     pip install -e .
 
 # Show recent politician trades
-track limit="50":
+track limit="25":
     {{stw}} track -n {{limit}}
 
 # Map trades to your funds
-map limit="50":
+map limit="25":
     {{stw}} map -n {{limit}}
 
 # Preview orders (dry-run)

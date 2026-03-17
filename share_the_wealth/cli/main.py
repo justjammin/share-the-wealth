@@ -174,12 +174,12 @@ def main() -> None:
     help_p.set_defaults(func=lambda a: cmd_help())
 
     track_p = sub.add_parser("track", help="Show recent politician trades")
-    track_p.add_argument("-n", "--limit", type=int, default=50, help="Trades per chamber")
+    track_p.add_argument("-n", "--limit", type=int, default=25, help="Trades per chamber")
     track_p.set_defaults(func=lambda a: cmd_track(a.limit))
 
     map_p = sub.add_parser("map", help="Map politician trades to your funds")
     map_p.add_argument("-f", "--funds", type=Path, default=None, help="Path to funds list (default: my_funds.txt)")
-    map_p.add_argument("-n", "--limit", type=int, default=50, help="Trades per chamber")
+    map_p.add_argument("-n", "--limit", type=int, default=25, help="Trades per chamber")
     map_p.set_defaults(func=lambda a: cmd_map(a.funds, a.limit))
 
     exec_p = sub.add_parser("execute", help="Execute mirrored trades via Alpaca")
