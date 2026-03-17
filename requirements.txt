@@ -1,0 +1,20 @@
+# Politician trade tracking
+requests>=2.31.0
+
+# Market data & ETF holdings
+yfinance>=0.2.36
+yahooquery>=2.3.0
+
+# Brokerage (Alpaca - free paper trading)
+alpaca-py>=0.18.0
+
+# Config & CLI
+python-dotenv>=1.0.0
+rich>=13.0.0
+
+# Web backend
+fastapi>=0.109.0
+uvicorn[standard]>=0.27.0
+
+# AI Insights
+anthropic>=0.18.0

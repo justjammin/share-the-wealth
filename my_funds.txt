@@ -1,0 +1,9 @@
+# Your ETFs and stocks - one symbol per line
+# Politician trades will be mapped to these when possible
+SPY
+QQQ
+VOO
+VTI
+XLK
+XLV
+XLF

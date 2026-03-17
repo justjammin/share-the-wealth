@@ -1,0 +1,2 @@
+[console_scripts]
+stw = share_the_wealth.cli:main

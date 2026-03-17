@@ -1,0 +1,466 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MIRRORTRADE · Portfolio Mirror Tracker</title>
+  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --bg: #0a0a0f;
+      --surface: #111118;
+      --border: #1e1e2e;
+      --accent: #00ff88;
+      --accentDim: #00ff8833;
+      --accentMuted: #00ff8866;
+      --red: #ff4466;
+      --redDim: #ff446622;
+      --yellow: #ffd166;
+      --text: #e2e8f0;
+      --muted: #64748b;
+      --card: #13131f;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; font-family: 'IBM Plex Mono', monospace; background: var(--bg); color: var(--text); min-height: 100vh; padding: 24px; }
+    .pill { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border-radius: 4px; }
+    .pill-green { background: var(--accentDim); color: var(--accent); border: 1px solid var(--accentMuted); }
+    .pill-red { background: var(--redDim); color: var(--red); border: 1px solid rgba(255,68,102,0.27); }
+    .pill-yellow { background: #1e2a4a; color: var(--yellow); border: 1px solid rgba(255,209,102,0.27); }
+    .pill-blue { background: rgba(68,136,255,0.2); color: #4488ff; border: 1px solid rgba(68,136,255,0.4); }
+    .avatar { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; letter-spacing: 1px; flex-shrink: 0; }
+    .avatar-green { background: rgba(0,255,136,0.09); color: var(--accent); border: 1.5px solid rgba(0,255,136,0.27); }
+    .avatar-blue { background: rgba(68,136,255,0.15); color: #4488ff; border: 1.5px solid rgba(68,136,255,0.27); }
+    .avatar-red { background: rgba(255,68,102,0.15); color: var(--red); border: 1.5px solid rgba(255,68,102,0.27); }
+    .avatar-yellow { background: rgba(255,209,102,0.15); color: var(--yellow); border: 1.5px solid rgba(255,209,102,0.27); }
+    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
+    .btn { cursor: pointer; border: none; font-family: inherit; transition: all 0.15s; }
+    .btn-mirror { font-size: 10px; font-weight: 700; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 5px; }
+    .btn-mirror-on { background: var(--accent); color: #000; border: 1px solid var(--accent); }
+    .btn-mirror-off { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .btn-mirror-fund-on { background: var(--yellow); color: #000; border: 1px solid var(--yellow); }
+    .btn-mirror-fund-off { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .tab { background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--muted); padding: 10px 18px; cursor: pointer; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; font-family: inherit; }
+    .tab.active { border-bottom-color: var(--accent); color: var(--accent); }
+    table { width: 100%; border-collapse: collapse; }
+    th { text-align: left; font-size: 10px; color: var(--muted); font-weight: 600; letter-spacing: 1px; padding: 0 0 10px; }
+    td { padding: 12px 0; border-bottom: 1px solid rgba(30,30,46,0.13); }
+    .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; cursor: pointer; transition: all 0.15s; }
+    .sidebar-item:hover { background: var(--card); }
+    .sidebar-item.selected { background: var(--accentDim); border: 1px solid var(--accentMuted); }
+    .sidebar-item:not(.selected) { background: var(--card); border: 1px solid var(--border); }
+    input { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-size: 13px; outline: none; font-family: inherit; }
+    .grid-2 { display: grid; grid-template-columns: 280px 1fr; gap: 16px; }
+    .grid-2-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+  </style>
+</head>
+<body>
+  <div id="header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px;">
+    <div>
+      <div style="font-size: 22px; font-weight: 900; letter-spacing: -0.5px;">
+        <span style="color: var(--accent)">MIRROR</span>TRADE
+      </div>
+      <div style="font-size: 11px; color: var(--muted); letter-spacing: 2px; margin-top: 2px;">
+        PORTFOLIO MIRROR TRACKER · CONGRESS & 13F
+      </div>
+    </div>
+    <div style="display: flex; gap: 8; align-items: center;">
+      <div id="mirror-badge" style="display: none; background: var(--accentDim); border: 1px solid var(--accentMuted); border-radius: 8px; padding: 6px 14px; font-size: 12px; color: var(--accent); font-weight: 700;"></div>
+      <div style="background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; font-size: 11px; color: var(--muted);">
+        Last sync: <span id="sync-time">--</span>
+      </div>
+    </div>
+  </div>
+
+  <div style="display: flex; gap: 4; margin-bottom: 20; border-bottom: 1px solid var(--border); padding-bottom: 0;">
+    <button class="tab active" data-tab="politicians">🏛 Politicians</button>
+    <button class="tab" data-tab="funds">🏦 Hedge Funds</button>
+    <button class="tab" data-tab="portfolio">📊 My Portfolio <span id="tab-badge" style="display: none; background: var(--accent); color: #000; border-radius: 10px; font-size: 10px; font-weight: 900; padding: 1px 6px; margin-left: 4px;"></span></button>
+    <button class="tab" data-tab="ai">⚡ AI Insights</button>
+  </div>
+
+  <div id="content" style="min-height: 420px;"></div>
+
+  <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 10px; color: var(--muted); letter-spacing: 0.5px;">
+    DATA: Congressional disclosures (STOCK Act) · 13F institutional filings · For informational purposes only · Not financial advice
+  </div>
+
+  <script>
+    const API = '';
+    let state = { tab: 'politicians', politicians: [], funds: [], mirrored: { politicians: [], funds: [] }, prices: {}, portfolio: [] };
+
+    function fmtCurrency(n) {
+      if (n >= 1e9) return '$' + (n/1e9).toFixed(1) + 'B';
+      if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
+      return '$' + n.toLocaleString();
+    }
+    function fmtPct(n) { return (n > 0 ? '+' : '') + n.toFixed(2) + '%'; }
+
+    async function fetchJson(url, opts) {
+      const r = await fetch(API + url, opts);
+      if (!r.ok) throw new Error(r.statusText);
+      return r.json();
+    }
+
+    async function load() {
+      try {
+        const [polRes, fundRes, mirRes] = await Promise.all([
+          fetchJson('/api/politicians'),
+          fetchJson('/api/hedge-funds'),
+          fetchJson('/api/mirrored'),
+        ]);
+        state.politicians = polRes.politicians || [];
+        state.funds = fundRes.funds || [];
+        state.mirrored = mirRes.mirrored || { politicians: [], funds: [] };
+        const symbols = [...new Set([
+          ...state.politicians.flatMap(p => p.trades.map(t => t.ticker)),
+          ...state.funds.flatMap(f => f.holdings.map(h => h.ticker)),
+        ])];
+        if (symbols.length) {
+          const priceRes = await fetchJson('/api/prices?symbols=' + symbols.join(','));
+          state.prices = priceRes.prices || {};
+        }
+        document.getElementById('sync-time').textContent = 'just now';
+      } catch (e) {
+        console.error(e);
+        document.getElementById('sync-time').textContent = 'error';
+      }
+      render();
+    }
+
+    async function toggleMirror(type, name) {
+      try {
+        const res = await fetchJson('/api/mirror', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ type: type === 'politicians' ? 'politicians' : 'funds', name }),
+        });
+        state.mirrored = res.mirrored;
+        render();
+      } catch (e) { console.error(e); }
+    }
+
+    function renderPoliticians() {
+      const sel = state.selectedPolitician;
+      return `
+        <div class="grid-2" style="height: 100%;">
+          <div style="display: flex; flex-direction: column; gap: 8;">
+            ${(state.politicians || []).map(p => {
+              const isMirrored = state.mirrored.politicians.includes(p.name);
+              const isSelected = sel && sel.name === p.name;
+              return `
+                <div class="sidebar-item ${isSelected ? 'selected' : ''}" data-select-politician="${p.name}">
+                  <div class="avatar avatar-${p.party === 'D' ? 'blue' : p.party === 'R' ? 'red' : 'green'}">${p.avatar}</div>
+                  <div style="flex: 1;">
+                    <div style="font-size: 13px; font-weight: 700;">${p.name}</div>
+                    <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">${p.trades.length} recent trades</div>
+                  </div>
+                  <button class="btn btn-mirror ${isMirrored ? 'btn-mirror-on' : 'btn-mirror-off'}" data-toggle="politicians" data-name="${p.name}">${isMirrored ? '✓ ON' : 'MIRROR'}</button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div class="card" style="overflow-y: auto;">
+            ${!sel ? `
+              <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--muted); font-size: 13px;">← Select a politician to view their trades</div>
+            ` : `
+              <div style="display: flex; align-items: center; gap: 12; margin-bottom: 20;">
+                <div class="avatar avatar-${sel.party === 'D' ? 'blue' : sel.party === 'R' ? 'red' : 'green'}">${sel.avatar}</div>
+                <div>
+                  <div style="font-size: 16px; font-weight: 800;">${sel.name}</div>
+                  <div style="font-size: 12px; color: var(--muted);">Congressional Disclosure Trades</div>
+                </div>
+              </div>
+              <table>
+                <thead><tr><th>TICKER</th><th>ACTION</th><th>SHARES</th><th>FILED PRICE</th><th>CURRENT</th><th>P&L</th><th>DATE</th></tr></thead>
+                <tbody>
+                  ${sel.trades.map(t => {
+                    const curr = state.prices[t.ticker] || t.price;
+                    const pl = ((curr - t.price) / t.price * 100) * (t.action === 'SELL' ? -1 : 1);
+                    return `
+                      <tr>
+                        <td style="font-weight: 800; color: var(--accent); font-size: 14px;">${t.ticker}</td>
+                        <td><span class="pill ${t.action === 'BUY' ? 'pill-green' : 'pill-red'}">${t.action}</span></td>
+                        <td>${t.shares}</td>
+                        <td>$${t.price.toFixed(2)}</td>
+                        <td>$${curr.toFixed(2)}</td>
+                        <td style="color: ${pl >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700;">${fmtPct(pl)}</td>
+                        <td style="color: var(--muted); font-size: 12px;">${t.date}</td>
+                      </tr>
+                    `;
+                  }).join('')}
+                </tbody>
+              </table>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function renderFunds() {
+      const sel = state.selectedFund;
+      return `
+        <div class="grid-2">
+          <div style="display: flex; flex-direction: column; gap: 8;">
+            ${(state.funds || []).map(f => {
+              const isMirrored = state.mirrored.funds.includes(f.name);
+              const isSelected = sel && sel.name === f.name;
+              return `
+                <div class="sidebar-item ${isSelected ? 'selected' : ''}" data-select-fund="${f.name}">
+                  <div class="avatar avatar-yellow">${f.avatar}</div>
+                  <div style="flex: 1;">
+                    <div style="font-size: 13px; font-weight: 700;">${f.name}</div>
+                    <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">${f.manager} · ${f.aum}</div>
+                  </div>
+                  <button class="btn btn-mirror ${isMirrored ? 'btn-mirror-fund-on' : 'btn-mirror-fund-off'}" data-toggle="funds" data-name="${f.name}">${isMirrored ? '✓ ON' : 'MIRROR'}</button>
+                </div>
+              `;
+            }).join('')}
+          </div>
+          <div class="card" style="overflow-y: auto;">
+            ${!sel ? `
+              <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--muted); font-size: 13px;">← Select a fund to view their 13F holdings</div>
+            ` : `
+              <div style="display: flex; align-items: center; gap: 12; margin-bottom: 20;">
+                <div class="avatar avatar-yellow">${sel.avatar}</div>
+                <div>
+                  <div style="font-size: 16px; font-weight: 800;">${sel.name}</div>
+                  <div style="font-size: 12px; color: var(--muted);">${sel.manager} · AUM ${sel.aum} · 13F Filing</div>
+                </div>
+              </div>
+              <table>
+                <thead><tr><th>TICKER</th><th>PORTFOLIO %</th><th>SHARES</th><th>VALUE</th><th>RECENT MOVE</th></tr></thead>
+                <tbody>
+                  ${sel.holdings.map(h => `
+                    <tr>
+                      <td style="font-weight: 800; color: var(--yellow); font-size: 14px;">${h.ticker}</td>
+                      <td>
+                        <div style="display: flex; align-items: center; gap: 8;">
+                          <div style="width: 60px; height: 4px; border-radius: 2px; background: var(--border); overflow: hidden;">
+                            <div style="width: ${Math.min(h.pct * 2, 100)}%; height: 100%; background: var(--yellow); border-radius: 2px;"></div>
+                          </div>
+                          <span>${h.pct}%</span>
+                        </div>
+                      </td>
+                      <td>${h.shares}</td>
+                      <td>${h.value}</td>
+                      <td style="color: ${h.change >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700;">${fmtPct(h.change)}</td>
+                    </tr>
+                  `).join('')}
+                </tbody>
+              </table>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    async function loadPortfolio() {
+      try {
+        const res = await fetchJson('/api/portfolio');
+        state.portfolio = res.positions || [];
+      } catch (e) { state.portfolio = []; }
+    }
+
+    function renderPortfolio() {
+      const positions = state.portfolio;
+      if (positions.length === 0) {
+        return `
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; gap: 12; color: var(--muted);">
+            <div style="font-size: 32px;">📊</div>
+            <div style="font-size: 14px;">No mirrors active yet</div>
+            <div style="font-size: 12px;">Enable mirrors from the Politicians or Hedge Funds tabs</div>
+          </div>
+        `;
+      }
+      const totalValue = positions.reduce((s, p) => s + p.value, 0);
+      const avgPl = positions.reduce((s, p) => s + p.pl, 0) / positions.length;
+      return `
+        <div>
+          <div class="grid-3" style="margin-bottom: 20;">
+
+            <div class="card" style="padding: 14px 18px;">
+              <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 6px;">TOTAL VALUE</div>
+              <div style="font-size: 22px; font-weight: 800; color: var(--accent);">${fmtCurrency(totalValue)}</div>
+            </div>
+            <div class="card" style="padding: 14px 18px;">
+              <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 6px;">POSITIONS</div>
+              <div style="font-size: 22px; font-weight: 800; color: var(--yellow);">${positions.length}</div>
+            </div>
+            <div class="card" style="padding: 14px 18px;">
+              <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 6px;">AVG P&L</div>
+              <div style="font-size: 22px; font-weight: 800; color: ${avgPl >= 0 ? 'var(--accent)' : 'var(--red)'};">${fmtPct(avgPl)}</div>
+            </div>
+          </div>
+          <div class="card">
+            <table>
+              <thead><tr><th>TICKER</th><th>SOURCE</th><th>TYPE</th><th>SHARES</th><th>AVG COST</th><th>CURRENT</th><th>P&L</th><th>VALUE</th></tr></thead>
+              <tbody>
+                ${positions.map(p => `
+                  <tr>
+                    <td style="font-weight: 800; color: var(--accent); font-size: 14px;">${p.ticker}</td>
+                    <td>${p.source}</td>
+                    <td><span class="pill ${p.type === 'Politician' ? 'pill-blue' : 'pill-yellow'}">${p.type === 'Politician' ? 'CONGRESS' : 'FUND'}</span></td>
+                    <td>${p.shares}</td>
+                    <td>$${p.cost.toFixed(2)}</td>
+                    <td>$${p.current.toFixed(2)}</td>
+                    <td style="color: ${p.pl >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700;">${fmtPct(p.pl)}</td>
+                    <td>${fmtCurrency(p.value)}</td>
+                  </tr>
+                `).join('')}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      `;
+    }
+
+    function renderAI() {
+      return `
+        <div class="grid-2-equal" style="height: 100%;">
+          <div class="card" style="display: flex; flex-direction: column;">
+            <div style="font-size: 12px; color: var(--muted); letter-spacing: 1px; margin-bottom: 12px;">PORTFOLIO ANALYSIS</div>
+            <button id="btn-analyze" class="btn" style="background: var(--accent); color: #000; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 800; font-size: 13px; cursor: pointer; margin-bottom: 16px; letter-spacing: 0.5px;">
+              ⚡ Analyze My Mirrors
+            </button>
+            <div id="ai-insight" style="flex: 1; overflow-y: auto; font-size: 13px; line-height: 1.8; white-space: pre-wrap; color: var(--muted); font-size: 12px;">
+              Enable mirrors from other tabs, then click Analyze to get AI-powered insights on your mirrored portfolio.
+            </div>
+          </div>
+          <div class="card" style="display: flex; flex-direction: column;">
+            <div style="font-size: 12px; color: var(--muted); letter-spacing: 1px; margin-bottom: 12px;">ASK YOUR PORTFOLIO ANALYST</div>
+            <div id="chat-messages" style="flex: 1; overflow-y: auto; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10;"></div>
+            <div style="display: flex; gap: 8;">
+              <input id="chat-input" type="text" placeholder="e.g. Should I be worried about tech concentration?" style="flex: 1;">
+              <button id="chat-send" class="btn" style="background: var(--accent); color: #000; border: none; border-radius: 8px; padding: 10px 16px; font-weight: 800; font-size: 13px; cursor: pointer;">→</button>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    function render() {
+      const total = (state.mirrored.politicians || []).length + (state.mirrored.funds || []).length;
+      const badge = document.getElementById('tab-badge');
+      const mirrorBadge = document.getElementById('mirror-badge');
+      if (total > 0) {
+        badge.style.display = 'inline';
+        badge.textContent = total;
+        mirrorBadge.style.display = 'block';
+        mirrorBadge.textContent = total + ' mirror' + (total !== 1 ? 's' : '') + ' active';
+      } else {
+        badge.style.display = 'none';
+        mirrorBadge.style.display = 'none';
+      }
+
+      let html = '';
+      if (state.tab === 'politicians') html = renderPoliticians();
+      else if (state.tab === 'funds') html = renderFunds();
+      else if (state.tab === 'portfolio') html = renderPortfolio();
+      else if (state.tab === 'ai') html = renderAI();
+
+      document.getElementById('content').innerHTML = html;
+
+      document.querySelectorAll('.tab').forEach(t => {
+        t.classList.toggle('active', t.dataset.tab === state.tab);
+      });
+
+      document.querySelectorAll('[data-tab]').forEach(b => {
+        if (b.classList.contains('tab')) return;
+        b.onclick = () => { state.tab = b.dataset.tab; render(); };
+      });
+
+      document.querySelectorAll('[data-select-politician]').forEach(el => {
+        el.onclick = (e) => {
+          if (e.target.closest('button')) return;
+          state.selectedPolitician = state.politicians.find(p => p.name === el.dataset.selectPolitician);
+          state.selectedFund = null;
+          render();
+        };
+      });
+      document.querySelectorAll('[data-select-fund]').forEach(el => {
+        el.onclick = (e) => {
+          if (e.target.closest('button')) return;
+          state.selectedFund = state.funds.find(f => f.name === el.dataset.selectFund);
+          state.selectedPolitician = null;
+          render();
+        };
+      });
+
+      document.querySelectorAll('[data-toggle]').forEach(btn => {
+        btn.onclick = (e) => {
+          e.stopPropagation();
+          toggleMirror(btn.dataset.toggle, btn.dataset.name);
+        };
+      });
+
+      if (state.tab === 'portfolio' && !state.portfolioLoaded) {
+        state.portfolioLoaded = true;
+        loadPortfolio().then(() => { render(); });
+      }
+
+      if (state.tab === 'ai') {
+        const analyzeBtn = document.getElementById('btn-analyze');
+        const insightEl = document.getElementById('ai-insight');
+        if (analyzeBtn) {
+          analyzeBtn.onclick = async () => {
+            analyzeBtn.disabled = true;
+            analyzeBtn.textContent = '⟳ Analyzing…';
+            try {
+              const res = await fetchJson('/api/ai/analyze', { method: 'POST' });
+              insightEl.textContent = res.insight || 'No response.';
+              insightEl.style.color = 'var(--text)';
+            } catch (e) {
+              insightEl.textContent = 'Error: ' + e.message;
+            }
+            analyzeBtn.disabled = false;
+            analyzeBtn.textContent = '⚡ Analyze My Mirrors';
+          };
+        }
+        const chatInput = document.getElementById('chat-input');
+        const chatSend = document.getElementById('chat-send');
+        const chatMessages = document.getElementById('chat-messages');
+        if (chatSend && chatInput) {
+          state.chatMessages = state.chatMessages || [];
+          chatMessages.innerHTML = state.chatMessages.map(m => `
+            <div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.7; background: ${m.role === 'user' ? 'var(--accentDim)' : 'var(--surface)'}; color: ${m.role === 'user' ? 'var(--accent)' : 'var(--text)'}; align-self: ${m.role === 'user' ? 'flex-end' : 'flex-start'}; max-width: 90%; border: 1px solid ${m.role === 'user' ? 'var(--accentMuted)' : 'var(--border)'};">${m.text}</div>
+          `).join('');
+          const send = async () => {
+            const q = chatInput.value.trim();
+            if (!q) return;
+            chatInput.value = '';
+            state.chatMessages.push({ role: 'user', text: q });
+            chatMessages.innerHTML += `<div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--accentDim); color: var(--accent); align-self: flex-end; max-width: 90%; border: 1px solid var(--accentMuted);">${q}</div>`;
+            chatSend.disabled = true;
+            try {
+              const res = await fetchJson('/api/ai/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ messages: state.chatMessages.slice(0, -1), question: q }),
+              });
+              state.chatMessages.push({ role: 'assistant', text: res.reply });
+              chatMessages.innerHTML += `<div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--surface); color: var(--text); align-self: flex-start; max-width: 90%; border: 1px solid var(--border);">${res.reply}</div>`;
+            } catch (e) {
+              state.chatMessages.push({ role: 'assistant', text: 'Error: ' + e.message });
+            }
+            chatSend.disabled = false;
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+          };
+          chatSend.onclick = send;
+          chatInput.onkeydown = e => { if (e.key === 'Enter') send(); };
+        }
+      }
+    }
+
+    document.querySelectorAll('.tab').forEach(t => {
+      t.onclick = () => {
+        state.tab = t.dataset.tab;
+        if (state.tab === 'portfolio') state.portfolioLoaded = false;
+        render();
+      };
+    });
+
+    load();
+  </script>
+</body>
+</html>
