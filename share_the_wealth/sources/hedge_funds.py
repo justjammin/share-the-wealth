@@ -3,6 +3,7 @@ Hedge fund 13F-style holdings repository.
 Tries Forms13F API first, falls back to curated data.
 """
 
+from share_the_wealth.config import Settings
 from share_the_wealth.models import HedgeFund, Holding
 from share_the_wealth.sources.hedge_fund_fetcher import fetch_all_funds
 
@@ -50,7 +51,12 @@ CURATED_FUNDS: list[HedgeFund] = [
 
 
 class HedgeFundRepository:
-    def list_all(self) -> dict:
+    def list_all(self, skip_warehouse: bool = False) -> dict:
+        if not skip_warehouse and Settings.READ_FROM_WAREHOUSE:
+            from share_the_wealth.warehouse.repository import load_latest_funds
+            loaded = load_latest_funds()
+            if loaded is not None:
+                return {"funds": loaded[0], "using_fallback": loaded[1]}
         try:
             fetched = fetch_all_funds()
             if fetched:

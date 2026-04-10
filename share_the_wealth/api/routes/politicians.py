@@ -31,6 +31,13 @@ def refresh_politicians():
         from share_the_wealth.api.services import _politician_using_fallback
         data = _politician_svc.get_politicians_with_trades(fresh=True)
         sched, fresh = fmp_budget.remaining()
+        try:
+            from share_the_wealth.sources import HedgeFundRepository
+            from share_the_wealth.warehouse.etl import persist_snapshot
+            fres = HedgeFundRepository().list_all(skip_warehouse=True)
+            persist_snapshot(data, fres["funds"], _politician_using_fallback, fres.get("using_fallback", False))
+        except Exception:
+            pass
         return {"politicians": data, "remaining": {"scheduled": sched, "fresh": fresh}, "using_fallback": _politician_using_fallback}
     except Exception as e:
         raise HTTPException(500, str(e))

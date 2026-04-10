@@ -8,6 +8,7 @@ from share_the_wealth.models import PoliticianTrade
 from share_the_wealth.sources import TradeFetcher, HedgeFundRepository, PriceService
 from share_the_wealth.api.state import MirrorState
 from share_the_wealth.api.fmp_budget import FMPCache, fmp_budget
+from share_the_wealth.config import Settings
 
 # Fallback when FMP API fails or returns empty (no key, rate limit, etc.)
 _politician_using_fallback = False
@@ -129,6 +130,14 @@ class PoliticianService:
         return result
 
     def get_politicians_with_trades(self, fresh: bool = False) -> list[dict]:
+        global _politician_using_fallback
+        if not fresh and Settings.READ_FROM_WAREHOUSE:
+            from share_the_wealth.warehouse.repository import load_latest_politicians
+            snap = load_latest_politicians()
+            if snap is not None:
+                pols, fb = snap
+                _politician_using_fallback = fb
+                return pols
         return _politician_cache.get(fresh)
 
 

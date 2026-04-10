@@ -134,6 +134,19 @@ def cmd_execute(funds_path: Path | None, dry_run: bool, order_size: float) -> No
             executed.append({"symbol": m.executable_symbol})
 
 
+def cmd_etl_run(args) -> None:
+    from share_the_wealth.warehouse.etl import run_etl
+    console.print("[bold]Running ETL (warehouse snapshot)…[/bold]\n")
+    r = run_etl()
+    if r.get("ok"):
+        console.print(
+            f"[green]✓[/green] Snapshot written (run_id={r['run_id']}) — "
+            f"politicians_fallback={r['politicians_fallback']} funds_fallback={r['funds_fallback']}"
+        )
+    else:
+        console.print(f"[red]✗[/red] {r.get('error', 'unknown')}")
+
+
 def cmd_run(host: str, port: int, reload: bool = False) -> None:
     import uvicorn
     if reload:
@@ -156,6 +169,7 @@ def cmd_help() -> None:
     console.print("  [cyan]stw map[/cyan]       Map trades to your funds (my_funds.txt)")
     console.print("  [cyan]stw execute[/cyan]   Execute mirrored trades via Alpaca")
     console.print("  [cyan]stw run[/cyan]       Start web UI (http://localhost:8007)")
+    console.print("  [cyan]stw etl run[/cyan]   Write SQLite warehouse snapshot (APIs + dummy fallback)")
     console.print("  [cyan]stw run --reload[/cyan]  Auto-reload on file changes (dev)")
     console.print("  [cyan]stw help[/cyan]     Show this help\n")
     console.print("[bold]Options:[/bold]")
@@ -193,6 +207,11 @@ def main() -> None:
     run_p.add_argument("-p", "--port", type=int, default=8007, help="Port")
     run_p.add_argument("--reload", action="store_true", help="Auto-reload on file changes (for dev)")
     run_p.set_defaults(func=lambda a: cmd_run(a.host, a.port, a.reload))
+
+    etl_p = sub.add_parser("etl", help="Warehouse ETL snapshot")
+    etl_sub = etl_p.add_subparsers(dest="etl_cmd", required=True)
+    etl_run_p = etl_sub.add_parser("run", help="Fetch politicians + funds and persist to SQLite")
+    etl_run_p.set_defaults(func=cmd_etl_run)
 
     args = parser.parse_args()
     args.func(args)

@@ -5,3 +5,4 @@ __pycache__/
 .pytest_cache/
 .venv/
 mirror_state.json
+data/*.db

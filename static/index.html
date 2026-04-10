@@ -80,6 +80,9 @@
   <div id="fallback-banner" style="display: none; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: var(--muted);">
     <span style="color: var(--yellow);">⚠</span> Showing sample data — API data wasn't available (missing key, rate limit, or network error).
   </div>
+  <div id="etl-banner" style="display: none; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: var(--muted);">
+    <span style="color: var(--accent);">ETL</span> <span id="etl-banner-text"></span>
+  </div>
   <div style="display: flex; gap: 4; margin-bottom: 20; border-bottom: 1px solid var(--border); padding-bottom: 0;">
     <button class="tab active" data-tab="politicians">🏛 Politicians</button>
     <button class="tab" data-tab="funds">🏦 Hedge Funds</button>
@@ -114,6 +117,27 @@
       return r.json();
     }
 
+    async function fetchEtlStatus() {
+      try {
+        const r = await fetchJson('/api/etl/status');
+        const el = document.getElementById('etl-banner');
+        const txt = document.getElementById('etl-banner-text');
+        if (!el || !txt) return;
+        if (r.last_run_failed) {
+          el.style.display = 'block';
+          txt.textContent = 'Last run failed: ' + String(r.last_run_error || 'unknown').slice(0, 240);
+        } else if (!r.last_success_at) {
+          el.style.display = 'block';
+          txt.textContent = 'No warehouse snapshot yet. Run stw etl run or use ↻ Fresh.';
+        } else if (r.stale) {
+          el.style.display = 'block';
+          txt.textContent = 'Snapshot may be stale (last success: ' + r.last_success_at + ').';
+        } else {
+          el.style.display = 'none';
+        }
+      } catch (e) {}
+    }
+
     async function load() {
       state.loading = true;
       render();
@@ -142,6 +166,7 @@
       }
       state.loading = false;
       render();
+      fetchEtlStatus();
     }
 
     async function toggleMirror(type, name) {
@@ -582,6 +607,7 @@
         btnRefresh.disabled = false;
         btnRefresh.textContent = '↻ Fresh';
         render();
+        fetchEtlStatus();
       };
     }
 

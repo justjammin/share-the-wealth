@@ -19,6 +19,7 @@ help:
     @echo "  just execute      Preview orders (dry-run)"
     @echo "  just execute-live Execute orders (live)"
     @echo "  just server       Start web UI on http://localhost:8007"
+    @echo "  just etl          Run warehouse ETL snapshot (SQLite)"
     @echo "  just help         Show this help"
     @echo ""
     @echo "Or: stw track | stw map | stw execute | stw run | stw help"
@@ -54,3 +55,7 @@ server:
 # Dev server with auto-reload on file changes
 dev:
     {{stw}} run --reload
+
+# Persist politicians + funds to data/warehouse.db (dummy data if APIs fail)
+etl:
+    {{stw}} etl run

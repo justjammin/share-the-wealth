@@ -10,7 +10,7 @@ from fastapi import FastAPI
 from fastapi.responses import FileResponse
 from fastapi.staticfiles import StaticFiles
 
-from share_the_wealth.api.routes import politicians, mirror, portfolio, ai
+from share_the_wealth.api.routes import politicians, mirror, portfolio, ai, etl
 from share_the_wealth.api.deps import mirror_state
 from share_the_wealth.api.services import _politician_cache
 
@@ -36,6 +36,7 @@ def create_app() -> FastAPI:
     app.include_router(mirror.router)
     app.include_router(portfolio.router)
     app.include_router(ai.router)
+    app.include_router(etl.router)
 
     @app.on_event("startup")
     def startup():

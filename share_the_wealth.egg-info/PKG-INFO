@@ -13,6 +13,8 @@ Requires-Dist: rich>=13.0.0
 Requires-Dist: fastapi>=0.109.0
 Requires-Dist: uvicorn[standard]>=0.27.0
 Requires-Dist: anthropic>=0.18.0
+Requires-Dist: sentence-transformers>=2.2.0
+Requires-Dist: numpy>=1.24.0
 
 # Share the Wealth
 
@@ -24,6 +26,11 @@ Track what politicians (Congress) and hedge funds are trading, then mirror those
 2. **Hedge Funds** – Curated 13F-style holdings (Berkshire, Pershing Square, Tiger Global)
 3. **My Portfolio** – Aggregates mirrored positions from politicians + funds you enable
 4. **AI Insights** – Claude-powered analysis of your mirrored portfolio (optional)
+
+## Documentation
+
+- **[Architecture](docs/architecture.md)** — ETL (silver layer, Docker, Airflow), RAG, risk scoring, env vars, and implementation phasing.
+- **Embeddings (RAG):** Implemented with **[sentence-transformers](https://www.sbert.net/)** (`all-MiniLM-L6-v2` by default) — **$0 embedding API cost**, runs locally on CPU; first request downloads ~80MB. Claude (Anthropic) still generates answers. Optional: OpenAI embeddings via `OPENAI_API_KEY` if you add that path later.
 
 ## Setup
 
@@ -46,20 +53,32 @@ source venv/bin/activate
 | `FMP_API_KEY` | Congress trades – [Financial Modeling Prep](https://site.financialmodelingprep.com/register) |
 | `ALPACA_API_KEY` / `ALPACA_SECRET_KEY` | Trading (optional) – [Alpaca](https://alpaca.markets) |
 | `ANTHROPIC_API_KEY` | AI Insights (optional) – [Anthropic](https://console.anthropic.com) |
+| `USE_LOCAL_RAG` | `true` (default) — use local sentence-transformers for RAG retrieval; see [Architecture](docs/architecture.md) |
+| `ST_EMBEDDING_MODEL` | Optional override — default `sentence-transformers/all-MiniLM-L6-v2` |
 
 ## Usage
 
-After `./setup.sh` and `source venv/bin/activate`:
+After `./setup.sh`:
 
-| Command | Shorthand |
-|---------|-----------|
-| `stw track` | `make track` or `just track` |
-| `stw map` | `make map` or `just map` |
-| `stw execute --dry-run` | `make execute` or `just execute` |
-| `stw execute` | `make execute-live` or `just execute-live` |
-| `stw run` | `make server` or `just server` |
+| Command | Usage |
+|---------|-------|
+| `make track` / `just track` | Show Congress trades |
+| `make map` / `just map` | Map trades to funds |
+| `make execute` / `just execute` | Preview orders |
+| `make server` / `just server` | Web UI |
+| `./bin/stw help` | Help (no venv activate needed) |
 
-**Web UI:** `stw run` (or `make server`) → http://localhost:8000
+**Or** `source venv/bin/activate` then use `stw` directly.
+
+**Web UI:** `make server` → http://localhost:8007
+
+## Data Sources
+
+| Data | API | Fallback |
+|------|-----|----------|
+| Congress trades | Financial Modeling Prep (FMP_API_KEY) | Curated politicians |
+| Hedge fund 13F | [Forms13F](https://forms13f.com) (free, no key) | Curated funds |
+| Prices | yfinance | - |
 
 ## Project Structure
 
@@ -72,10 +91,10 @@ share-the-wealth/
 ├── share_the_wealth/
 │   ├── config/         # Settings (env)
 │   ├── models/         # PoliticianTrade, MappedTrade, HedgeFund, OrderResult
-│   ├── sources/        # TradeFetcher, HedgeFundRepository, PriceService
+│   ├── sources/        # TradeFetcher, HedgeFundFetcher, HedgeFundRepository, PriceService
 │   ├── analysis/       # FundAnalyzer
 │   ├── execution/      # Broker (Alpaca)
-│   ├── ai/             # AIAnalyst (Anthropic)
+│   ├── ai/             # AIAnalyst (Anthropic), local_embeddings, rag_retriever
 │   ├── api/            # FastAPI app, routes, services, state
 │   └── cli/             # CLI commands
 └── my_funds.txt        # Your ETFs/stocks for mapping
