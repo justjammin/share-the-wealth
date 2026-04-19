@@ -1,0 +1,13 @@
+services:
+  app:
+    build: .
+    ports:
+      - "8007:8007"
+    environment:
+      WAREHOUSE_PATH: /data/warehouse.db
+      READ_FROM_WAREHOUSE: "true"
+    volumes:
+      - warehouse_data:/data
+
+volumes:
+  warehouse_data:
