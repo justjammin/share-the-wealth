@@ -9,8 +9,6 @@ share_the_wealth.egg-info/requires.txt
 share_the_wealth.egg-info/top_level.txt
 share_the_wealth/ai/__init__.py
 share_the_wealth/ai/analyst.py
-share_the_wealth/ai/local_embeddings.py
-share_the_wealth/ai/rag_retriever.py
 share_the_wealth/analysis/__init__.py
 share_the_wealth/analysis/fund_analyzer.py
 share_the_wealth/api/__init__.py

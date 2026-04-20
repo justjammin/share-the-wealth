@@ -33,7 +33,7 @@ def refresh_politicians():
         sched, fresh = fmp_budget.remaining()
         try:
             from share_the_wealth.sources import HedgeFundRepository
-            from share_the_wealth.warehouse.etl import persist_snapshot
+            from share_the_wealth.warehouse.repository import persist_snapshot
             fres = HedgeFundRepository().list_all(skip_warehouse=True)
             persist_snapshot(data, fres["funds"], _politician_using_fallback, fres.get("using_fallback", False))
         except Exception:

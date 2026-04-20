@@ -4,96 +4,236 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>SHARE THE WEALTH · Portfolio Mirror Tracker</title>
-  <link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Archivo:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;600;700&display=swap" rel="stylesheet">
   <style>
     :root {
-      --bg: #0a0a0f;
-      --surface: #111118;
-      --border: #1e1e2e;
-      --accent: #00ff88;
-      --accentDim: #00ff8833;
-      --accentMuted: #00ff8866;
-      --red: #ff4466;
-      --redDim: #ff446622;
-      --yellow: #ffd166;
-      --text: #e2e8f0;
-      --muted: #64748b;
-      --card: #13131f;
+      --bg:           #020617;
+      --surface:      #0f172a;
+      --card:         #1e293b;
+      --border:       #1e3a5f;
+      --border-sub:   #0f2540;
+      --accent:       #22c55e;
+      --accent-dim:   rgba(34,197,94,0.08);
+      --accent-muted: rgba(34,197,94,0.28);
+      --red:          #f43f5e;
+      --red-dim:      rgba(244,63,94,0.08);
+      --yellow:       #f59e0b;
+      --yellow-dim:   rgba(245,158,11,0.08);
+      --blue:         #3b82f6;
+      --blue-dim:     rgba(59,130,246,0.08);
+      --text:         #f1f5f9;
+      --muted:        #94a3b8;
+      --dim:          #475569;
+      --mono:         'IBM Plex Mono', monospace;
+      --sans:         'Archivo', system-ui, sans-serif;
+      --head:         'Space Grotesk', system-ui, sans-serif;
     }
-    * { box-sizing: border-box; }
-    body { margin: 0; font-family: 'IBM Plex Mono', monospace; background: var(--bg); color: var(--text); min-height: 100vh; padding: 24px; }
-    .pill { font-size: 10px; font-weight: 700; letter-spacing: 1px; padding: 2px 8px; border-radius: 4px; }
-    .pill-green { background: var(--accentDim); color: var(--accent); border: 1px solid var(--accentMuted); }
-    .pill-red { background: var(--redDim); color: var(--red); border: 1px solid rgba(255,68,102,0.27); }
-    .pill-yellow { background: #1e2a4a; color: var(--yellow); border: 1px solid rgba(255,209,102,0.27); }
-    .pill-blue { background: rgba(68,136,255,0.2); color: #4488ff; border: 1px solid rgba(68,136,255,0.4); }
-    .avatar { width: 38px; height: 38px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-weight: 800; font-size: 12px; letter-spacing: 1px; flex-shrink: 0; }
-    .avatar-green { background: rgba(0,255,136,0.09); color: var(--accent); border: 1.5px solid rgba(0,255,136,0.27); }
-    .avatar-blue { background: rgba(68,136,255,0.15); color: #4488ff; border: 1.5px solid rgba(68,136,255,0.27); }
-    .avatar-red { background: rgba(255,68,102,0.15); color: var(--red); border: 1.5px solid rgba(255,68,102,0.27); }
-    .avatar-yellow { background: rgba(255,209,102,0.15); color: var(--yellow); border: 1.5px solid rgba(255,209,102,0.27); }
-    .card { background: var(--card); border: 1px solid var(--border); border-radius: 10px; padding: 20px; }
-    .btn { cursor: pointer; border: none; font-family: inherit; transition: all 0.15s; }
-    .btn-mirror { font-size: 10px; font-weight: 700; letter-spacing: 0.5px; padding: 4px 10px; border-radius: 5px; }
-    .btn-mirror-on { background: var(--accent); color: #000; border: 1px solid var(--accent); }
-    .btn-mirror-off { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-    .btn-mirror-fund-on { background: var(--yellow); color: #000; border: 1px solid var(--yellow); }
-    .btn-mirror-fund-off { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-    .tab { background: transparent; border: none; border-bottom: 2px solid transparent; color: var(--muted); padding: 10px 18px; cursor: pointer; font-size: 12px; font-weight: 700; letter-spacing: 0.5px; font-family: inherit; }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: var(--sans);
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      padding: 20px 28px 36px;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    /* ── PILLS ── */
+    .pill {
+      display: inline-flex; align-items: center;
+      font-size: 10px; font-weight: 700;
+      font-family: var(--mono); letter-spacing: 0.8px;
+      padding: 2px 7px; border-radius: 4px;
+    }
+    .pill-green  { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-muted); }
+    .pill-red    { background: var(--red-dim);    color: var(--red);    border: 1px solid rgba(244,63,94,0.28); }
+    .pill-yellow { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,158,11,0.28); }
+    .pill-blue   { background: var(--blue-dim);   color: var(--blue);   border: 1px solid rgba(59,130,246,0.28); }
+
+    /* ── AVATARS ── */
+    .avatar {
+      width: 36px; height: 36px; border-radius: 8px;
+      display: flex; align-items: center; justify-content: center;
+      font-weight: 700; font-size: 11px;
+      font-family: var(--mono); letter-spacing: 0.5px; flex-shrink: 0;
+    }
+    .avatar-green  { background: rgba(34,197,94,0.1);  color: var(--accent); border: 1px solid rgba(34,197,94,0.25); }
+    .avatar-blue   { background: rgba(59,130,246,0.1); color: var(--blue);   border: 1px solid rgba(59,130,246,0.25); }
+    .avatar-red    { background: rgba(244,63,94,0.1);  color: var(--red);    border: 1px solid rgba(244,63,94,0.25); }
+    .avatar-yellow { background: rgba(245,158,11,0.1); color: var(--yellow); border: 1px solid rgba(245,158,11,0.25); }
+
+    /* ── CARD ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 20px;
+    }
+
+    /* ── BUTTONS ── */
+    .btn {
+      cursor: pointer; border: none;
+      font-family: var(--mono); font-weight: 700;
+      letter-spacing: 0.5px;
+      transition: all 0.15s ease;
+      display: inline-flex; align-items: center; gap: 5px;
+    }
+    .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    .btn-mirror { font-size: 10px; padding: 4px 10px; border-radius: 6px; }
+    .btn-mirror-on        { background: var(--accent); color: #000; border: 1px solid var(--accent); }
+    .btn-mirror-on:hover  { background: #16a34a; }
+    .btn-mirror-off       { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .btn-mirror-off:hover { border-color: var(--accent-muted); color: var(--accent); }
+    .btn-mirror-fund-on        { background: var(--yellow); color: #000; border: 1px solid var(--yellow); }
+    .btn-mirror-fund-on:hover  { background: #d97706; }
+    .btn-mirror-fund-off       { background: transparent; color: var(--muted); border: 1px solid var(--border); }
+    .btn-mirror-fund-off:hover { border-color: rgba(245,158,11,0.4); color: var(--yellow); }
+
+    /* ── TABS ── */
+    .tabs-row {
+      display: flex; gap: 2px;
+      margin-bottom: 20px;
+      border-bottom: 1px solid var(--border);
+    }
+    .tab {
+      display: inline-flex; align-items: center; gap: 6px;
+      background: transparent; border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--muted); padding: 10px 16px;
+      cursor: pointer; font-size: 12px; font-weight: 600;
+      font-family: var(--sans); letter-spacing: 0.2px;
+      transition: all 0.15s ease; margin-bottom: -1px;
+    }
+    .tab:hover { color: var(--text); }
     .tab.active { border-bottom-color: var(--accent); color: var(--accent); }
+    .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ── TABLE ── */
     table { width: 100%; border-collapse: collapse; }
-    th { text-align: left; font-size: 10px; color: var(--muted); font-weight: 600; letter-spacing: 1px; padding: 0 0 10px; }
-    td { padding: 12px 0; border-bottom: 1px solid rgba(30,30,46,0.13); }
-    .sidebar-item { display: flex; align-items: center; gap: 12px; padding: 12px 14px; border-radius: 10px; cursor: pointer; transition: all 0.15s; }
-    .sidebar-item:hover { background: var(--card); }
-    .sidebar-item.selected { background: var(--accentDim); border: 1px solid var(--accentMuted); }
-    .sidebar-item:not(.selected) { background: var(--card); border: 1px solid var(--border); }
-    input { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; color: var(--text); font-size: 13px; outline: none; font-family: inherit; }
-    .grid-2 { display: grid; grid-template-columns: 280px 1fr; gap: 16px; }
+    thead tr { border-bottom: 1px solid var(--border); }
+    th {
+      text-align: left; font-size: 10px; color: var(--dim);
+      font-weight: 600; font-family: var(--mono); letter-spacing: 1px;
+      padding: 0 8px 10px 0;
+    }
+    td { padding: 11px 8px 11px 0; border-bottom: 1px solid var(--border-sub); vertical-align: middle; }
+    tbody tr:last-child td { border-bottom: none; }
+    tbody tr:hover td { background: rgba(255,255,255,0.015); }
+
+    /* ── SIDEBAR ITEMS ── */
+    .sidebar-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 11px 13px; border-radius: 10px;
+      cursor: pointer; transition: all 0.15s ease;
+      border: 1px solid var(--border); background: var(--surface);
+    }
+    .sidebar-item:hover { border-color: var(--accent-muted); background: rgba(34,197,94,0.03); }
+    .sidebar-item.selected { background: var(--accent-dim); border-color: var(--accent-muted); }
+    .sidebar-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+
+    /* ── INPUT ── */
+    input {
+      background: var(--bg); border: 1px solid var(--border);
+      border-radius: 8px; padding: 10px 14px;
+      color: var(--text); font-size: 13px; font-family: var(--sans);
+      outline: none; transition: border-color 0.15s;
+    }
+    input:focus { border-color: var(--accent-muted); }
+    input::placeholder { color: var(--dim); }
+
+    /* ── GRIDS ── */
+    .grid-2       { display: grid; grid-template-columns: 272px 1fr; gap: 16px; }
     .grid-2-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
-    .loading-spinner { width: 40px; height: 40px; border: 3px solid var(--border); border-top-color: var(--accent); border-radius: 50%; animation: spin 0.8s linear infinite; }
-    .loading-spinner-sm { width: 20px; height: 20px; border-width: 2px; }
+    .grid-3       { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
+
+    /* ── SPINNER ── */
+    .loading-spinner {
+      width: 36px; height: 36px;
+      border: 2px solid var(--border); border-top-color: var(--accent);
+      border-radius: 50%; animation: spin 0.8s linear infinite;
+    }
+    .loading-spinner-sm { width: 16px; height: 16px; }
     @keyframes spin { to { transform: rotate(360deg); } }
-    .loading-placeholder { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 300px; gap: 16px; color: var(--muted); font-size: 13px; }
+    .loading-placeholder {
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      min-height: 300px; gap: 14px;
+      color: var(--muted); font-size: 13px;
+    }
+
+    /* ── STAT CARD ── */
+    .stat-label { font-size: 10px; color: var(--dim); font-family: var(--mono); letter-spacing: 1px; margin-bottom: 8px; }
+    .stat-value { font-size: 22px; font-weight: 700; font-family: var(--head); line-height: 1; }
+
+    @media (prefers-reduced-motion: reduce) {
+      *, .loading-spinner { animation: none !important; transition: none !important; }
+    }
   </style>
 </head>
 <body>
-  <div id="header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px;">
+
+  <!-- ── HEADER ── -->
+  <div id="header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
     <div>
-      <div style="font-size: 22px; font-weight: 900; letter-spacing: -0.5px;">
-        <span style="color: var(--accent)">SHARE</span>THE<span style="color: var(--accent)">WEALTH</span>
+      <div style="font-size: 21px; font-weight: 700; font-family: var(--head); letter-spacing: -0.5px; line-height: 1;">
+        <span style="color: var(--accent)">SHARE</span><span style="color: var(--dim); font-weight: 400; margin: 0 4px;">&middot;</span><span style="color: var(--text)">THE</span><span style="color: var(--dim); font-weight: 400; margin: 0 4px;">&middot;</span><span style="color: var(--accent)">WEALTH</span>
       </div>
-      <div style="font-size: 11px; color: var(--muted); letter-spacing: 2px; margin-top: 2px;">
-        PORTFOLIO MIRROR TRACKER · CONGRESS & 13F
+      <div style="font-size: 10px; color: var(--dim); letter-spacing: 2.5px; margin-top: 6px; font-family: var(--mono);">
+        PORTFOLIO MIRROR TRACKER &middot; CONGRESS &amp; 13F
       </div>
     </div>
-    <div style="display: flex; gap: 8; align-items: center;">
-      <div id="mirror-badge" style="display: none; background: var(--accentDim); border: 1px solid var(--accentMuted); border-radius: 8px; padding: 6px 14px; font-size: 12px; color: var(--accent); font-weight: 700;"></div>
-      <div style="background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 6px 14px; font-size: 11px; color: var(--muted);">
-        Last sync: <span id="sync-time">--</span>
+    <div style="display: flex; gap: 8px; align-items: center;">
+      <div id="mirror-badge" style="display: none; background: var(--accent-dim); border: 1px solid var(--accent-muted); border-radius: 20px; padding: 5px 13px; font-size: 11px; color: var(--accent); font-weight: 600; font-family: var(--mono);"></div>
+      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 13px; font-size: 11px; color: var(--dim); font-family: var(--mono);">
+        sync: <span id="sync-time" style="color: var(--muted);">--</span>
       </div>
-      <button id="btn-refresh" class="btn" style="background: var(--accent); color: #000; border: none; border-radius: 8px; padding: 6px 12px; font-size: 11px; font-weight: 700; cursor: pointer;">↻ Fresh</button>
+      <button id="btn-refresh" class="btn" style="background: var(--accent); color: #000; border-radius: 8px; padding: 7px 14px; font-size: 11px;">
+        <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
+        Fresh
+      </button>
     </div>
   </div>
 
-  <div id="fallback-banner" style="display: none; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: var(--muted);">
-    <span style="color: var(--yellow);">⚠</span> Showing sample data — API data wasn't available (missing key, rate limit, or network error).
+  <!-- ── BANNERS ── -->
+  <div id="fallback-banner" style="display: none; background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 12px; color: var(--muted);">
+    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    Showing sample data &mdash; API data wasn't available (missing key, rate limit, or network error).
   </div>
-  <div id="etl-banner" style="display: none; background: var(--card); border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; margin-bottom: 16px; font-size: 12px; color: var(--muted);">
-    <span style="color: var(--accent);">ETL</span> <span id="etl-banner-text"></span>
+  <div id="etl-banner" style="display: none; background: var(--accent-dim); border: 1px solid var(--accent-muted); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 12px; color: var(--muted);">
+    <span style="color: var(--accent); font-family: var(--mono); font-weight: 700; font-size: 10px; letter-spacing: 1.5px; margin-right: 8px;">ETL</span><span id="etl-banner-text"></span>
   </div>
-  <div style="display: flex; gap: 4; margin-bottom: 20; border-bottom: 1px solid var(--border); padding-bottom: 0;">
-    <button class="tab active" data-tab="politicians">🏛 Politicians</button>
-    <button class="tab" data-tab="funds">🏦 Hedge Funds</button>
-    <button class="tab" data-tab="portfolio">📊 My Portfolio <span id="tab-badge" style="display: none; background: var(--accent); color: #000; border-radius: 10px; font-size: 10px; font-weight: 900; padding: 1px 6px; margin-left: 4px;"></span></button>
-    <button class="tab" data-tab="ai">⚡ AI Insights</button>
+
+  <!-- ── TABS ── -->
+  <div class="tabs-row">
+    <button class="tab active" data-tab="politicians">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22h18"/><path d="M6 18V10"/><path d="M10 18V10"/><path d="M14 18V10"/><path d="M18 18V10"/><path d="M3 10h18"/><path d="M3 6l9-4 9 4"/></svg>
+      Politicians
+    </button>
+    <button class="tab" data-tab="funds">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+      Hedge Funds
+    </button>
+    <button class="tab" data-tab="portfolio">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
+      My Portfolio
+      <span id="tab-badge" style="display: none; background: var(--accent); color: #000; border-radius: 10px; font-size: 9px; font-weight: 800; font-family: var(--mono); padding: 1px 6px;"></span>
+    </button>
+    <button class="tab" data-tab="ai">
+      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+      AI Insights
+    </button>
   </div>
 
   <div id="content" style="min-height: 420px;"></div>
 
-  <div style="margin-top: 24px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 10px; color: var(--muted); letter-spacing: 0.5px;">
-    DATA: Congressional disclosures (STOCK Act) · 13F institutional filings · For informational purposes only · Not financial advice
+  <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 10px; color: var(--dim); letter-spacing: 0.5px; font-family: var(--mono);">
+    DATA: Congressional disclosures (STOCK Act) &middot; 13F institutional filings &middot; For informational purposes only &middot; Not financial advice
   </div>
 
   <script>
@@ -101,7 +241,7 @@
     let state = { tab: 'politicians', politicians: [], funds: [], mirrored: { politicians: [], funds: [] }, prices: {}, portfolio: [], loading: true, portfolioLoading: false, refreshing: false, usingFallback: { politicians: false, funds: false } };
 
     function loadingHtml(msg) {
-      return `<div class="loading-placeholder"><div class="loading-spinner"></div><span>${msg || 'Loading…'}</span></div>`;
+      return `<div class="loading-placeholder"><div class="loading-spinner"></div><span>${msg || 'Loading\u2026'}</span></div>`;
     }
 
     function fmtCurrency(n) {
@@ -128,7 +268,7 @@
           txt.textContent = 'Last run failed: ' + String(r.last_run_error || 'unknown').slice(0, 240);
         } else if (!r.last_success_at) {
           el.style.display = 'block';
-          txt.textContent = 'No warehouse snapshot yet. Run stw etl run or use ↻ Fresh.';
+          txt.textContent = 'No warehouse snapshot yet. Run stw etl run or use \u21bb Fresh.';
         } else if (r.stale) {
           el.style.display = 'block';
           txt.textContent = 'Snapshot may be stale (last success: ' + r.last_success_at + ').';
@@ -181,52 +321,60 @@
       } catch (e) { console.error(e); }
     }
 
+    const iconBuilding = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22h18"/><path d="M6 18V10"/><path d="M10 18V10"/><path d="M14 18V10"/><path d="M18 18V10"/><path d="M3 10h18"/><path d="M3 6l9-4 9 4"/></svg>`;
+    const iconTrend = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`;
+    const iconBarChart = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`;
+
     function renderPoliticians() {
       const sel = state.selectedPolitician;
       return `
         <div class="grid-2" style="height: 100%;">
-          <div style="display: flex; flex-direction: column; gap: 8;">
+          <div style="display: flex; flex-direction: column; gap: 8px;">
             ${(state.politicians || []).map(p => {
               const isMirrored = state.mirrored.politicians.includes(p.name);
               const isSelected = sel && sel.name === p.name;
+              const col = p.party === 'D' ? 'blue' : p.party === 'R' ? 'red' : 'green';
               return `
-                <div class="sidebar-item ${isSelected ? 'selected' : ''}" data-select-politician="${p.name}">
-                  <div class="avatar avatar-${p.party === 'D' ? 'blue' : p.party === 'R' ? 'red' : 'green'}">${p.avatar}</div>
-                  <div style="flex: 1;">
-                    <div style="font-size: 13px; font-weight: 700;">${p.name}</div>
-                    <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">${p.trades.length} recent trades</div>
+                <div class="sidebar-item ${isSelected ? 'selected' : ''}" data-select-politician="${p.name}" tabindex="0">
+                  <div class="avatar avatar-${col}">${p.avatar}</div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 13px; font-weight: 600;">${p.name}</div>
+                    <div style="font-size: 11px; color: var(--muted); margin-top: 2px; font-family: var(--mono);">${p.trades.length} trades</div>
                   </div>
-                  <button class="btn btn-mirror ${isMirrored ? 'btn-mirror-on' : 'btn-mirror-off'}" data-toggle="politicians" data-name="${p.name}">${isMirrored ? '✓ ON' : 'MIRROR'}</button>
+                  <button class="btn btn-mirror ${isMirrored ? 'btn-mirror-on' : 'btn-mirror-off'}" data-toggle="politicians" data-name="${p.name}">${isMirrored ? '&#10003; ON' : 'MIRROR'}</button>
                 </div>
               `;
             }).join('')}
           </div>
           <div class="card" style="overflow-y: auto;">
             ${!sel ? `
-              <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--muted); font-size: 13px;">← Select a politician to view their trades</div>
+              <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--muted); font-size: 13px; gap: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                Select a politician to view their trades
+              </div>
             ` : `
-              <div style="display: flex; align-items: center; gap: 12; margin-bottom: 20;">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
                 <div class="avatar avatar-${sel.party === 'D' ? 'blue' : sel.party === 'R' ? 'red' : 'green'}">${sel.avatar}</div>
                 <div>
-                  <div style="font-size: 16px; font-weight: 800;">${sel.name}</div>
-                  <div style="font-size: 12px; color: var(--muted);">Congressional Disclosure Trades</div>
+                  <div style="font-size: 16px; font-weight: 700; font-family: var(--head);">${sel.name}</div>
+                  <div style="font-size: 10px; color: var(--muted); margin-top: 4px; font-family: var(--mono); letter-spacing: 1px;">CONGRESSIONAL DISCLOSURE TRADES</div>
                 </div>
               </div>
               <table>
-                <thead><tr><th>TICKER</th><th>ACTION</th><th>SHARES</th><th>FILED PRICE</th><th>CURRENT</th><th>P&L</th><th>DATE</th></tr></thead>
+                <thead><tr><th>TICKER</th><th>ACTION</th><th>SHARES</th><th>FILED</th><th>CURRENT</th><th>P&amp;L</th><th>DATE</th></tr></thead>
                 <tbody>
                   ${sel.trades.map(t => {
                     const curr = state.prices[t.ticker] || t.price;
                     const pl = ((curr - t.price) / t.price * 100) * (t.action === 'SELL' ? -1 : 1);
                     return `
                       <tr>
-                        <td style="font-weight: 800; color: var(--accent); font-size: 14px;">${t.ticker}</td>
+                        <td style="font-weight: 800; color: var(--accent); font-size: 13px; font-family: var(--mono);">${t.ticker}</td>
                         <td><span class="pill ${t.action === 'BUY' ? 'pill-green' : 'pill-red'}">${t.action}</span></td>
-                        <td>${t.shares}</td>
-                        <td>$${t.price.toFixed(2)}</td>
-                        <td>$${curr.toFixed(2)}</td>
-                        <td style="color: ${pl >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700;">${fmtPct(pl)}</td>
-                        <td style="color: var(--muted); font-size: 12px;">${t.date}</td>
+                        <td style="font-family: var(--mono); font-size: 12px;">${t.shares}</td>
+                        <td style="font-family: var(--mono); font-size: 12px;">$${t.price.toFixed(2)}</td>
+                        <td style="font-family: var(--mono); font-size: 12px;">$${curr.toFixed(2)}</td>
+                        <td style="color: ${pl >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700; font-family: var(--mono); font-size: 12px;">${fmtPct(pl)}</td>
+                        <td style="color: var(--muted); font-size: 11px; font-family: var(--mono);">${t.date}</td>
                       </tr>
                     `;
                   }).join('')}
@@ -242,50 +390,53 @@
       const sel = state.selectedFund;
       return `
         <div class="grid-2">
-          <div style="display: flex; flex-direction: column; gap: 8;">
+          <div style="display: flex; flex-direction: column; gap: 8px;">
             ${(state.funds || []).map(f => {
               const isMirrored = state.mirrored.funds.includes(f.name);
               const isSelected = sel && sel.name === f.name;
               return `
-                <div class="sidebar-item ${isSelected ? 'selected' : ''}" data-select-fund="${f.name}">
+                <div class="sidebar-item ${isSelected ? 'selected' : ''}" data-select-fund="${f.name}" tabindex="0">
                   <div class="avatar avatar-yellow">${f.avatar}</div>
-                  <div style="flex: 1;">
-                    <div style="font-size: 13px; font-weight: 700;">${f.name}</div>
-                    <div style="font-size: 11px; color: var(--muted); margin-top: 2px;">${f.manager} · ${f.aum}</div>
+                  <div style="flex: 1; min-width: 0;">
+                    <div style="font-size: 13px; font-weight: 600;">${f.name}</div>
+                    <div style="font-size: 11px; color: var(--muted); margin-top: 2px; font-family: var(--mono);">${f.manager} &middot; ${f.aum}</div>
                   </div>
-                  <button class="btn btn-mirror ${isMirrored ? 'btn-mirror-fund-on' : 'btn-mirror-fund-off'}" data-toggle="funds" data-name="${f.name}">${isMirrored ? '✓ ON' : 'MIRROR'}</button>
+                  <button class="btn btn-mirror ${isMirrored ? 'btn-mirror-fund-on' : 'btn-mirror-fund-off'}" data-toggle="funds" data-name="${f.name}">${isMirrored ? '&#10003; ON' : 'MIRROR'}</button>
                 </div>
               `;
             }).join('')}
           </div>
           <div class="card" style="overflow-y: auto;">
             ${!sel ? `
-              <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--muted); font-size: 13px;">← Select a fund to view their 13F holdings</div>
+              <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--muted); font-size: 13px; gap: 8px;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
+                Select a fund to view their 13F holdings
+              </div>
             ` : `
-              <div style="display: flex; align-items: center; gap: 12; margin-bottom: 20;">
+              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
                 <div class="avatar avatar-yellow">${sel.avatar}</div>
                 <div>
-                  <div style="font-size: 16px; font-weight: 800;">${sel.name}</div>
-                  <div style="font-size: 12px; color: var(--muted);">${sel.manager} · AUM ${sel.aum} · 13F Filing</div>
+                  <div style="font-size: 16px; font-weight: 700; font-family: var(--head);">${sel.name}</div>
+                  <div style="font-size: 10px; color: var(--muted); margin-top: 4px; font-family: var(--mono); letter-spacing: 1px;">${sel.manager} &middot; AUM ${sel.aum} &middot; 13F FILING</div>
                 </div>
               </div>
               <table>
-                <thead><tr><th>TICKER</th><th>PORTFOLIO %</th><th>SHARES</th><th>VALUE</th><th>RECENT MOVE</th></tr></thead>
+                <thead><tr><th>TICKER</th><th>WEIGHT</th><th>SHARES</th><th>VALUE</th><th>MOVE</th></tr></thead>
                 <tbody>
                   ${sel.holdings.map(h => `
                     <tr>
-                      <td style="font-weight: 800; color: var(--yellow); font-size: 14px;">${h.ticker}</td>
+                      <td style="font-weight: 800; color: var(--yellow); font-size: 13px; font-family: var(--mono);">${h.ticker}</td>
                       <td>
-                        <div style="display: flex; align-items: center; gap: 8;">
-                          <div style="width: 60px; height: 4px; border-radius: 2px; background: var(--border); overflow: hidden;">
+                        <div style="display: flex; align-items: center; gap: 8px;">
+                          <div style="width: 56px; height: 3px; border-radius: 2px; background: var(--border); overflow: hidden; flex-shrink: 0;">
                             <div style="width: ${Math.min(h.pct * 2, 100)}%; height: 100%; background: var(--yellow); border-radius: 2px;"></div>
                           </div>
-                          <span>${h.pct}%</span>
+                          <span style="font-family: var(--mono); font-size: 11px;">${h.pct}%</span>
                         </div>
                       </td>
-                      <td>${h.shares}</td>
-                      <td>${h.value}</td>
-                      <td style="color: ${h.change >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700;">${fmtPct(h.change)}</td>
+                      <td style="font-family: var(--mono); font-size: 12px;">${h.shares}</td>
+                      <td style="font-family: var(--mono); font-size: 12px;">${h.value}</td>
+                      <td style="color: ${h.change >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700; font-family: var(--mono); font-size: 12px;">${fmtPct(h.change)}</td>
                     </tr>
                   `).join('')}
                 </tbody>
@@ -307,10 +458,10 @@
       const positions = state.portfolio;
       if (positions.length === 0) {
         return `
-          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; gap: 12; color: var(--muted);">
-            <div style="font-size: 32px;">📊</div>
-            <div style="font-size: 14px;">No mirrors active yet</div>
-            <div style="font-size: 12px;">Enable mirrors from the Politicians or Hedge Funds tabs</div>
+          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; gap: 12px; color: var(--muted);">
+            <div style="color: var(--dim);">${iconBarChart}</div>
+            <div style="font-size: 14px; font-weight: 600;">No mirrors active yet</div>
+            <div style="font-size: 12px; color: var(--dim);">Enable mirrors from the Politicians or Hedge Funds tabs</div>
           </div>
         `;
       }
@@ -323,76 +474,65 @@
         if (!bySource[key][p.source]) bySource[key][p.source] = [];
         bySource[key][p.source].push(p);
       });
+      const posTable = (pos) => `
+        <table>
+          <thead><tr><th>TICKER</th><th>SHARES</th><th>AVG COST</th><th>CURRENT</th><th>P&amp;L</th><th>VALUE</th></tr></thead>
+          <tbody>
+            ${pos.map(p => `
+              <tr>
+                <td style="font-weight: 800; color: var(--accent); font-size: 13px; font-family: var(--mono);">${p.ticker}</td>
+                <td style="font-family: var(--mono); font-size: 12px;">${p.shares}</td>
+                <td style="font-family: var(--mono); font-size: 12px;">$${p.cost.toFixed(2)}</td>
+                <td style="font-family: var(--mono); font-size: 12px;">$${p.current.toFixed(2)}</td>
+                <td style="color: ${p.pl >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700; font-family: var(--mono); font-size: 12px;">${fmtPct(p.pl)}</td>
+                <td style="font-family: var(--mono); font-size: 12px;">${fmtCurrency(p.value)}</td>
+              </tr>
+            `).join('')}
+          </tbody>
+        </table>
+      `;
       const polSection = (state.mirrored.politicians || []).length > 0 && bySource.politicians ? `
         <div class="card" style="margin-bottom: 16px;">
-          <div style="display: flex; align-items: center; gap: 8; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
-            <span style="font-size: 14px;">🏛</span>
-            <div style="font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 1px;">POLITICIANS</div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
+            <span style="color: var(--muted);">${iconBuilding}</span>
+            <div style="font-size: 10px; font-weight: 700; font-family: var(--mono); color: var(--muted); letter-spacing: 1.2px;">POLITICIANS</div>
           </div>
           ${Object.entries(bySource.politicians).map(([source, pos]) => `
             <div style="margin-bottom: 16px;">
-              <div style="font-size: 13px; font-weight: 700; color: var(--text); margin-bottom: 8px;">${source}</div>
-              <table>
-                <thead><tr><th>TICKER</th><th>SHARES</th><th>AVG COST</th><th>CURRENT</th><th>P&L</th><th>VALUE</th></tr></thead>
-                <tbody>
-                  ${pos.map(p => `
-                    <tr>
-                      <td style="font-weight: 800; color: var(--accent); font-size: 14px;">${p.ticker}</td>
-                      <td>${p.shares}</td>
-                      <td>$${p.cost.toFixed(2)}</td>
-                      <td>$${p.current.toFixed(2)}</td>
-                      <td style="color: ${p.pl >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700;">${fmtPct(p.pl)}</td>
-                      <td>${fmtCurrency(p.value)}</td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
+              <div style="font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px;">${source}</div>
+              ${posTable(pos)}
             </div>
           `).join('')}
         </div>
       ` : '';
       const fundSection = (state.mirrored.funds || []).length > 0 && bySource.funds ? `
         <div class="card">
-          <div style="display: flex; align-items: center; gap: 8; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
-            <span style="font-size: 14px;">🏦</span>
-            <div style="font-size: 12px; font-weight: 700; color: var(--muted); letter-spacing: 1px;">HEDGE FUNDS</div>
+          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
+            <span style="color: var(--yellow);">${iconTrend}</span>
+            <div style="font-size: 10px; font-weight: 700; font-family: var(--mono); color: var(--muted); letter-spacing: 1.2px;">HEDGE FUNDS</div>
           </div>
           ${Object.entries(bySource.funds).map(([source, pos]) => `
             <div style="margin-bottom: 16px;">
-              <div style="font-size: 13px; font-weight: 700; color: var(--yellow); margin-bottom: 8px;">${source}</div>
-              <table>
-                <thead><tr><th>TICKER</th><th>SHARES</th><th>AVG COST</th><th>CURRENT</th><th>P&L</th><th>VALUE</th></tr></thead>
-                <tbody>
-                  ${pos.map(p => `
-                    <tr>
-                      <td style="font-weight: 800; color: var(--accent); font-size: 14px;">${p.ticker}</td>
-                      <td>${p.shares}</td>
-                      <td>$${p.cost.toFixed(2)}</td>
-                      <td>$${p.current.toFixed(2)}</td>
-                      <td style="color: ${p.pl >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700;">${fmtPct(p.pl)}</td>
-                      <td>${fmtCurrency(p.value)}</td>
-                    </tr>
-                  `).join('')}
-                </tbody>
-              </table>
+              <div style="font-size: 13px; font-weight: 600; color: var(--yellow); margin-bottom: 10px;">${source}</div>
+              ${posTable(pos)}
             </div>
           `).join('')}
         </div>
       ` : '';
       return `
         <div>
-          <div class="grid-3" style="margin-bottom: 20;">
-            <div class="card" style="padding: 14px 18px;">
-              <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 6px;">TOTAL VALUE</div>
-              <div style="font-size: 22px; font-weight: 800; color: var(--accent);">${fmtCurrency(totalValue)}</div>
+          <div class="grid-3" style="margin-bottom: 20px;">
+            <div class="card" style="padding: 16px 20px;">
+              <div class="stat-label">TOTAL VALUE</div>
+              <div class="stat-value" style="color: var(--accent);">${fmtCurrency(totalValue)}</div>
             </div>
-            <div class="card" style="padding: 14px 18px;">
-              <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 6px;">POSITIONS</div>
-              <div style="font-size: 22px; font-weight: 800; color: var(--yellow);">${positions.length}</div>
+            <div class="card" style="padding: 16px 20px;">
+              <div class="stat-label">POSITIONS</div>
+              <div class="stat-value" style="color: var(--yellow);">${positions.length}</div>
             </div>
-            <div class="card" style="padding: 14px 18px;">
-              <div style="font-size: 11px; color: var(--muted); letter-spacing: 1px; margin-bottom: 6px;">AVG P&L</div>
-              <div style="font-size: 22px; font-weight: 800; color: ${avgPl >= 0 ? 'var(--accent)' : 'var(--red)'};">${fmtPct(avgPl)}</div>
+            <div class="card" style="padding: 16px 20px;">
+              <div class="stat-label">AVG P&amp;L</div>
+              <div class="stat-value" style="color: ${avgPl >= 0 ? 'var(--accent)' : 'var(--red)'};">${fmtPct(avgPl)}</div>
             </div>
           </div>
           ${polSection}
@@ -404,21 +544,24 @@
     function renderAI() {
       return `
         <div class="grid-2-equal" style="height: 100%;">
-          <div class="card" style="display: flex; flex-direction: column;">
-            <div style="font-size: 12px; color: var(--muted); letter-spacing: 1px; margin-bottom: 12px;">PORTFOLIO ANALYSIS</div>
-            <button id="btn-analyze" class="btn" style="background: var(--accent); color: #000; border: none; border-radius: 8px; padding: 10px 20px; font-weight: 800; font-size: 13px; cursor: pointer; margin-bottom: 16px; letter-spacing: 0.5px;">
-              ⚡ Analyze My Mirrors
+          <div class="card" style="display: flex; flex-direction: column; gap: 0;">
+            <div style="font-size: 10px; color: var(--dim); font-family: var(--mono); letter-spacing: 1.2px; margin-bottom: 14px;">PORTFOLIO ANALYSIS</div>
+            <button id="btn-analyze" class="btn" style="background: var(--accent); color: #000; border-radius: 8px; padding: 10px 20px; font-size: 12px; margin-bottom: 16px; justify-content: center; letter-spacing: 0.5px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              Analyze My Mirrors
             </button>
-            <div id="ai-insight" style="flex: 1; overflow-y: auto; font-size: 13px; line-height: 1.8; white-space: pre-wrap; color: var(--muted); font-size: 12px;">
+            <div id="ai-insight" style="flex: 1; overflow-y: auto; font-size: 12px; line-height: 1.8; white-space: pre-wrap; color: var(--muted); font-family: var(--sans);">
               Enable mirrors from other tabs, then click Analyze to get AI-powered insights on your mirrored portfolio.
             </div>
           </div>
-          <div class="card" style="display: flex; flex-direction: column;">
-            <div style="font-size: 12px; color: var(--muted); letter-spacing: 1px; margin-bottom: 12px;">ASK YOUR PORTFOLIO ANALYST</div>
-            <div id="chat-messages" style="flex: 1; overflow-y: auto; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10;"></div>
-            <div style="display: flex; gap: 8;">
+          <div class="card" style="display: flex; flex-direction: column; gap: 0;">
+            <div style="font-size: 10px; color: var(--dim); font-family: var(--mono); letter-spacing: 1.2px; margin-bottom: 14px;">ASK YOUR PORTFOLIO ANALYST</div>
+            <div id="chat-messages" style="flex: 1; overflow-y: auto; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px;"></div>
+            <div style="display: flex; gap: 8px;">
               <input id="chat-input" type="text" placeholder="e.g. Should I be worried about tech concentration?" style="flex: 1;">
-              <button id="chat-send" class="btn" style="background: var(--accent); color: #000; border: none; border-radius: 8px; padding: 10px 16px; font-weight: 800; font-size: 13px; cursor: pointer;">→</button>
+              <button id="chat-send" class="btn" style="background: var(--accent); color: #000; border-radius: 8px; padding: 10px 14px; flex-shrink: 0;">
+                <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+              </button>
             </div>
           </div>
         </div>
@@ -452,11 +595,11 @@
 
       let html = '';
       if (state.loading && (state.politicians.length === 0 && state.funds.length === 0)) {
-        html = loadingHtml('Fetching politicians & hedge funds…');
+        html = loadingHtml('Fetching politicians & hedge funds\u2026');
       } else if (state.refreshing) {
-        html = loadingHtml('Pulling fresh data…');
+        html = loadingHtml('Pulling fresh data\u2026');
       } else if (state.tab === 'portfolio' && state.portfolioLoading) {
-        html = loadingHtml('Loading portfolio…');
+        html = loadingHtml('Loading portfolio\u2026');
       } else if (state.tab === 'politicians') {
         html = renderPoliticians();
       } else if (state.tab === 'funds') {
@@ -518,7 +661,7 @@
         if (analyzeBtn) {
           analyzeBtn.onclick = async () => {
             analyzeBtn.disabled = true;
-            analyzeBtn.textContent = '⟳ Analyzing…';
+            analyzeBtn.textContent = '\u23F3 Analyzing\u2026';
             try {
               const res = await fetchJson('/api/ai/analyze', { method: 'POST' });
               insightEl.textContent = res.insight || 'No response.';
@@ -527,7 +670,7 @@
               insightEl.textContent = 'Error: ' + e.message;
             }
             analyzeBtn.disabled = false;
-            analyzeBtn.textContent = '⚡ Analyze My Mirrors';
+            analyzeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Analyze My Mirrors';
           };
         }
         const chatInput = document.getElementById('chat-input');
@@ -536,19 +679,19 @@
         if (chatSend && chatInput) {
           state.chatMessages = state.chatMessages || [];
           chatMessages.innerHTML = state.chatMessages.map(m => `
-            <div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.7; background: ${m.role === 'user' ? 'var(--accentDim)' : 'var(--surface)'}; color: ${m.role === 'user' ? 'var(--accent)' : 'var(--text)'}; align-self: ${m.role === 'user' ? 'flex-end' : 'flex-start'}; max-width: 90%; border: 1px solid ${m.role === 'user' ? 'var(--accentMuted)' : 'var(--border)'};">${m.text}</div>
+            <div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.7; background: ${m.role === 'user' ? 'var(--accent-dim)' : 'var(--bg)'}; color: ${m.role === 'user' ? 'var(--accent)' : 'var(--text)'}; align-self: ${m.role === 'user' ? 'flex-end' : 'flex-start'}; max-width: 90%; border: 1px solid ${m.role === 'user' ? 'var(--accent-muted)' : 'var(--border)'};">${m.text}</div>
           `).join('');
           const send = async () => {
             const q = chatInput.value.trim();
             if (!q) return;
             chatInput.value = '';
             state.chatMessages.push({ role: 'user', text: q });
-            chatMessages.innerHTML += `<div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--accentDim); color: var(--accent); align-self: flex-end; max-width: 90%; border: 1px solid var(--accentMuted);">${q}</div>`;
+            chatMessages.innerHTML += `<div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--accent-dim); color: var(--accent); align-self: flex-end; max-width: 90%; border: 1px solid var(--accent-muted);">${q}</div>`;
             chatSend.disabled = true;
             const loadingEl = document.createElement('div');
             loadingEl.id = 'chat-loading';
-            loadingEl.style.cssText = 'padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--surface); align-self: flex-start; max-width: 90%; border: 1px solid var(--border); display: flex; align-items: center; gap: 8px;';
-            loadingEl.innerHTML = '<div class="loading-spinner loading-spinner-sm"></div><span style="color: var(--muted);">Thinking…</span>';
+            loadingEl.style.cssText = 'padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--bg); align-self: flex-start; max-width: 90%; border: 1px solid var(--border); display: flex; align-items: center; gap: 8px;';
+            loadingEl.innerHTML = '<div class="loading-spinner loading-spinner-sm"></div><span style="color: var(--muted);">Thinking\u2026</span>';
             chatMessages.appendChild(loadingEl);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             try {
@@ -559,11 +702,11 @@
               });
               loadingEl.remove();
               state.chatMessages.push({ role: 'assistant', text: res.reply });
-              chatMessages.innerHTML += `<div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--surface); color: var(--text); align-self: flex-start; max-width: 90%; border: 1px solid var(--border);">${res.reply}</div>`;
+              chatMessages.innerHTML += `<div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--bg); color: var(--text); align-self: flex-start; max-width: 90%; border: 1px solid var(--border);">${res.reply}</div>`;
             } catch (e) {
               loadingEl.remove();
               state.chatMessages.push({ role: 'assistant', text: 'Error: ' + e.message });
-              chatMessages.innerHTML += `<div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--surface); color: var(--red); align-self: flex-start; max-width: 90%; border: 1px solid var(--border);">Error: ${e.message}</div>`;
+              chatMessages.innerHTML += `<div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--bg); color: var(--red); align-self: flex-start; max-width: 90%; border: 1px solid var(--border);">Error: ${e.message}</div>`;
             }
             chatSend.disabled = false;
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -586,7 +729,7 @@
     if (btnRefresh) {
       btnRefresh.onclick = async () => {
         btnRefresh.disabled = true;
-        btnRefresh.textContent = '⟳';
+        btnRefresh.textContent = '\u23F3';
         state.refreshing = true;
         render();
         try {
@@ -605,7 +748,7 @@
         }
         state.refreshing = false;
         btnRefresh.disabled = false;
-        btnRefresh.textContent = '↻ Fresh';
+        btnRefresh.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg> Fresh';
         render();
         fetchEtlStatus();
       };

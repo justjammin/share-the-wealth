@@ -2,7 +2,7 @@
 AI insights via Anthropic Claude. Optional local RAG (sentence-transformers) for grounded retrieval.
 """
 
-from share_the_wealth.ai import local_embeddings
+from share_the_wealth.ai.local_embeddings import is_available as _rag_available
 from share_the_wealth.ai.rag_retriever import get_rag_retriever
 from share_the_wealth.config import Settings
 
@@ -32,7 +32,7 @@ class AIAnalyst:
         self._api_key = api_key or Settings.ANTHROPIC_API_KEY
 
     def _rag_block(self, context: str, query: str) -> str | None:
-        if not Settings.USE_LOCAL_RAG or not local_embeddings.is_available():
+        if not Settings.USE_LOCAL_RAG or not _rag_available():
             return None
         retriever = get_rag_retriever()
         retriever.ensure_indexed(context)
@@ -87,7 +87,7 @@ class AIAnalyst:
                 f"Full portfolio context:\n{context}\n\n---\n\n"
                 f"Question: {new_question}\n\n{_RAG_DISCLAIMER}"
                 if excerpts
-                else f"{new_question}\n\nPortfolio context:\n{context}",
+                else f"{new_question}\n\nPortfolio context:\n{context}"
             )
             formatted = [{"role": m["role"], "content": m["content"]} for m in messages]
             formatted.append({"role": "user", "content": user_tail})
