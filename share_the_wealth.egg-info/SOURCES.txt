@@ -9,6 +9,8 @@ share_the_wealth.egg-info/requires.txt
 share_the_wealth.egg-info/top_level.txt
 share_the_wealth/ai/__init__.py
 share_the_wealth/ai/analyst.py
+share_the_wealth/ai/local_embeddings.py
+share_the_wealth/ai/rag_retriever.py
 share_the_wealth/analysis/__init__.py
 share_the_wealth/analysis/fund_analyzer.py
 share_the_wealth/api/__init__.py
@@ -19,6 +21,7 @@ share_the_wealth/api/services.py
 share_the_wealth/api/state.py
 share_the_wealth/api/routes/__init__.py
 share_the_wealth/api/routes/ai.py
+share_the_wealth/api/routes/etl.py
 share_the_wealth/api/routes/mirror.py
 share_the_wealth/api/routes/politicians.py
 share_the_wealth/api/routes/portfolio.py
@@ -37,3 +40,6 @@ share_the_wealth/sources/hedge_fund_fetcher.py
 share_the_wealth/sources/hedge_funds.py
 share_the_wealth/sources/prices.py
 share_the_wealth/sources/trade_fetcher.py
+share_the_wealth/warehouse/__init__.py
+share_the_wealth/warehouse/etl.py
+share_the_wealth/warehouse/repository.py

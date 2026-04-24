@@ -10,17 +10,22 @@
   <style>
     :root {
       --bg:           #020617;
-      --surface:      #0f172a;
-      --card:         #1e293b;
-      --border:       #1e3a5f;
-      --border-sub:   #0f2540;
+      --surface:      rgba(15,23,42,0.85);
+      --surface-solid: #0f172a;
+      --card:         rgba(15,23,42,0.7);
+      --card-border:  rgba(255,255,255,0.06);
+      --border:       rgba(30,58,95,0.8);
+      --border-sub:   rgba(15,37,64,0.6);
       --accent:       #22c55e;
       --accent-dim:   rgba(34,197,94,0.08);
-      --accent-muted: rgba(34,197,94,0.28);
+      --accent-muted: rgba(34,197,94,0.25);
+      --accent-glow:  rgba(34,197,94,0.15);
       --red:          #f43f5e;
       --red-dim:      rgba(244,63,94,0.08);
-      --yellow:       #f59e0b;
-      --yellow-dim:   rgba(245,158,11,0.08);
+      --gold:         #f59e0b;
+      --gold-dim:     rgba(245,158,11,0.08);
+      --gold-muted:   rgba(245,158,11,0.2);
+      --gold-glow:    rgba(245,158,11,0.12);
       --blue:         #3b82f6;
       --blue-dim:     rgba(59,130,246,0.08);
       --text:         #f1f5f9;
@@ -29,18 +34,46 @@
       --mono:         'IBM Plex Mono', monospace;
       --sans:         'Archivo', system-ui, sans-serif;
       --head:         'Space Grotesk', system-ui, sans-serif;
+      --radius:       12px;
+      --radius-sm:    8px;
+      --shadow:       0 4px 24px rgba(0,0,0,0.4), 0 1px 4px rgba(0,0,0,0.3);
+      --shadow-glow-green: 0 0 0 1px rgba(34,197,94,0.15), 0 8px 32px rgba(34,197,94,0.08);
+      --shadow-glow-gold:  0 0 0 1px rgba(245,158,11,0.2),  0 8px 32px rgba(245,158,11,0.08);
     }
 
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
+    html { scroll-behavior: smooth; }
+
     body {
       font-family: var(--sans);
       background: var(--bg);
+      background-image:
+        radial-gradient(ellipse at 15% 0%, rgba(34,197,94,0.05) 0%, transparent 55%),
+        radial-gradient(ellipse at 85% 100%, rgba(59,130,246,0.04) 0%, transparent 55%);
       color: var(--text);
       min-height: 100vh;
-      padding: 20px 28px 36px;
+      padding: 24px 32px 48px;
       font-size: 14px;
       line-height: 1.5;
+    }
+
+    /* ── GLASS CARD ── */
+    .card {
+      background: var(--card);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border: 1px solid var(--card-border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
+    }
+    .card-solid {
+      background: var(--surface-solid);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 20px;
+      box-shadow: var(--shadow);
     }
 
     /* ── PILLS ── */
@@ -51,28 +84,22 @@
       padding: 2px 7px; border-radius: 4px;
     }
     .pill-green  { background: var(--accent-dim); color: var(--accent); border: 1px solid var(--accent-muted); }
-    .pill-red    { background: var(--red-dim);    color: var(--red);    border: 1px solid rgba(244,63,94,0.28); }
-    .pill-yellow { background: var(--yellow-dim); color: var(--yellow); border: 1px solid rgba(245,158,11,0.28); }
-    .pill-blue   { background: var(--blue-dim);   color: var(--blue);   border: 1px solid rgba(59,130,246,0.28); }
+    .pill-red    { background: var(--red-dim);    color: var(--red);    border: 1px solid rgba(244,63,94,0.25); }
+    .pill-gold   { background: var(--gold-dim);   color: var(--gold);   border: 1px solid var(--gold-muted); }
 
-    /* ── AVATARS ── */
+    /* ── AVATAR ── */
     .avatar {
-      width: 36px; height: 36px; border-radius: 8px;
+      width: 38px; height: 38px; border-radius: 10px;
       display: flex; align-items: center; justify-content: center;
       font-weight: 700; font-size: 11px;
       font-family: var(--mono); letter-spacing: 0.5px; flex-shrink: 0;
+      transition: transform 0.2s ease;
     }
-    .avatar-green  { background: rgba(34,197,94,0.1);  color: var(--accent); border: 1px solid rgba(34,197,94,0.25); }
-    .avatar-blue   { background: rgba(59,130,246,0.1); color: var(--blue);   border: 1px solid rgba(59,130,246,0.25); }
-    .avatar-red    { background: rgba(244,63,94,0.1);  color: var(--red);    border: 1px solid rgba(244,63,94,0.25); }
-    .avatar-yellow { background: rgba(245,158,11,0.1); color: var(--yellow); border: 1px solid rgba(245,158,11,0.25); }
-
-    /* ── CARD ── */
-    .card {
-      background: var(--surface);
-      border: 1px solid var(--border);
-      border-radius: 12px;
-      padding: 20px;
+    .avatar-gold {
+      background: linear-gradient(135deg, rgba(245,158,11,0.18), rgba(245,158,11,0.06));
+      color: var(--gold);
+      border: 1px solid var(--gold-muted);
+      box-shadow: 0 2px 8px rgba(245,158,11,0.1);
     }
 
     /* ── BUTTONS ── */
@@ -80,38 +107,73 @@
       cursor: pointer; border: none;
       font-family: var(--mono); font-weight: 700;
       letter-spacing: 0.5px;
-      transition: all 0.15s ease;
+      transition: all 0.18s ease;
       display: inline-flex; align-items: center; gap: 5px;
     }
     .btn:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn-primary {
+      background: linear-gradient(135deg, #22c55e, #16a34a);
+      color: #000; border-radius: var(--radius-sm);
+      padding: 8px 16px; font-size: 11px;
+      box-shadow: 0 2px 12px rgba(34,197,94,0.25);
+    }
+    .btn-primary:hover:not(:disabled) {
+      background: linear-gradient(135deg, #16a34a, #15803d);
+      box-shadow: 0 4px 20px rgba(34,197,94,0.35);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active:not(:disabled) { transform: translateY(0); }
 
     .btn-mirror { font-size: 10px; padding: 4px 10px; border-radius: 6px; }
-    .btn-mirror-on        { background: var(--accent); color: #000; border: 1px solid var(--accent); }
-    .btn-mirror-on:hover  { background: #16a34a; }
-    .btn-mirror-off       { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-    .btn-mirror-off:hover { border-color: var(--accent-muted); color: var(--accent); }
-    .btn-mirror-fund-on        { background: var(--yellow); color: #000; border: 1px solid var(--yellow); }
-    .btn-mirror-fund-on:hover  { background: #d97706; }
-    .btn-mirror-fund-off       { background: transparent; color: var(--muted); border: 1px solid var(--border); }
-    .btn-mirror-fund-off:hover { border-color: rgba(245,158,11,0.4); color: var(--yellow); }
+    .btn-mirror-fund-on {
+      background: linear-gradient(135deg, rgba(245,158,11,0.2), rgba(245,158,11,0.1));
+      color: var(--gold);
+      border: 1px solid var(--gold-muted);
+    }
+    .btn-mirror-fund-on:hover {
+      background: linear-gradient(135deg, rgba(245,158,11,0.3), rgba(245,158,11,0.15));
+      box-shadow: 0 2px 8px rgba(245,158,11,0.15);
+    }
+    .btn-mirror-fund-off {
+      background: transparent; color: var(--dim);
+      border: 1px solid rgba(255,255,255,0.06);
+    }
+    .btn-mirror-fund-off:hover {
+      border-color: var(--gold-muted);
+      color: var(--gold);
+      background: var(--gold-dim);
+    }
 
     /* ── TABS ── */
     .tabs-row {
-      display: flex; gap: 2px;
-      margin-bottom: 20px;
-      border-bottom: 1px solid var(--border);
+      display: flex; gap: 4px;
+      margin-bottom: 24px;
+      background: rgba(15,23,42,0.6);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid var(--card-border);
+      border-radius: 14px;
+      padding: 5px;
+      width: fit-content;
     }
     .tab {
       display: inline-flex; align-items: center; gap: 6px;
       background: transparent; border: none;
-      border-bottom: 2px solid transparent;
-      color: var(--muted); padding: 10px 16px;
+      border-radius: 10px;
+      color: var(--dim); padding: 8px 16px;
       cursor: pointer; font-size: 12px; font-weight: 600;
-      font-family: var(--sans); letter-spacing: 0.2px;
-      transition: all 0.15s ease; margin-bottom: -1px;
+      font-family: var(--sans); letter-spacing: 0.1px;
+      transition: all 0.2s ease; white-space: nowrap;
     }
-    .tab:hover { color: var(--text); }
-    .tab.active { border-bottom-color: var(--accent); color: var(--accent); }
+    .tab:hover { color: var(--muted); background: rgba(255,255,255,0.03); }
+    .tab.active {
+      background: linear-gradient(135deg, rgba(34,197,94,0.15), rgba(34,197,94,0.05));
+      color: var(--accent);
+      border: 1px solid rgba(34,197,94,0.2);
+      box-shadow: 0 2px 8px rgba(34,197,94,0.08);
+    }
     .tab:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
     /* ── TABLE ── */
@@ -119,47 +181,70 @@
     thead tr { border-bottom: 1px solid var(--border); }
     th {
       text-align: left; font-size: 10px; color: var(--dim);
-      font-weight: 600; font-family: var(--mono); letter-spacing: 1px;
-      padding: 0 8px 10px 0;
+      font-weight: 700; font-family: var(--mono); letter-spacing: 1.2px;
+      padding: 0 8px 12px 0; text-transform: uppercase;
     }
-    td { padding: 11px 8px 11px 0; border-bottom: 1px solid var(--border-sub); vertical-align: middle; }
+    td {
+      padding: 11px 8px 11px 0;
+      border-bottom: 1px solid rgba(30,58,95,0.3);
+      vertical-align: middle;
+    }
     tbody tr:last-child td { border-bottom: none; }
-    tbody tr:hover td { background: rgba(255,255,255,0.015); }
+    tbody tr { transition: background 0.15s ease; }
+    tbody tr:hover td { background: rgba(255,255,255,0.02); }
 
     /* ── SIDEBAR ITEMS ── */
     .sidebar-item {
       display: flex; align-items: center; gap: 12px;
-      padding: 11px 13px; border-radius: 10px;
-      cursor: pointer; transition: all 0.15s ease;
-      border: 1px solid var(--border); background: var(--surface);
+      padding: 12px 14px; border-radius: 10px;
+      cursor: pointer; transition: all 0.2s ease;
+      border: 1px solid rgba(255,255,255,0.04);
+      background: rgba(15,23,42,0.6);
     }
-    .sidebar-item:hover { border-color: var(--accent-muted); background: rgba(34,197,94,0.03); }
-    .sidebar-item.selected { background: var(--accent-dim); border-color: var(--accent-muted); }
+    .sidebar-item:hover {
+      border-color: rgba(245,158,11,0.25);
+      background: rgba(245,158,11,0.04);
+      transform: translateX(2px);
+    }
+    .sidebar-item.selected {
+      background: linear-gradient(135deg, rgba(245,158,11,0.1), rgba(245,158,11,0.04));
+      border-color: rgba(245,158,11,0.3);
+      box-shadow: var(--shadow-glow-gold);
+    }
+    .sidebar-item.selected .avatar-gold { transform: scale(1.05); }
     .sidebar-item:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
 
-    /* ── INPUT ── */
+    /* ── INPUTS ── */
     input {
-      background: var(--bg); border: 1px solid var(--border);
-      border-radius: 8px; padding: 10px 14px;
+      background: rgba(2,6,23,0.8);
+      backdrop-filter: blur(8px);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-sm); padding: 10px 14px;
       color: var(--text); font-size: 13px; font-family: var(--sans);
-      outline: none; transition: border-color 0.15s;
+      outline: none; transition: border-color 0.18s, box-shadow 0.18s;
     }
-    input:focus { border-color: var(--accent-muted); }
+    input:focus {
+      border-color: var(--accent-muted);
+      box-shadow: 0 0 0 3px rgba(34,197,94,0.06);
+    }
     input::placeholder { color: var(--dim); }
 
-    /* ── GRIDS ── */
-    .grid-2       { display: grid; grid-template-columns: 272px 1fr; gap: 16px; }
+    /* ── GRID ── */
+    .grid-2       { display: grid; grid-template-columns: 280px 1fr; gap: 16px; }
     .grid-2-equal { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
     .grid-3       { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; }
 
-    /* ── SPINNER ── */
+    /* ── LOADING ── */
     .loading-spinner {
-      width: 36px; height: 36px;
-      border: 2px solid var(--border); border-top-color: var(--accent);
-      border-radius: 50%; animation: spin 0.8s linear infinite;
+      width: 32px; height: 32px;
+      border: 2px solid rgba(34,197,94,0.1);
+      border-top-color: var(--accent);
+      border-radius: 50%;
+      animation: spin 0.75s linear infinite;
     }
-    .loading-spinner-sm { width: 16px; height: 16px; }
+    .loading-spinner-sm { width: 16px; height: 16px; border-width: 2px; }
     @keyframes spin { to { transform: rotate(360deg); } }
+
     .loading-placeholder {
       display: flex; flex-direction: column;
       align-items: center; justify-content: center;
@@ -167,64 +252,191 @@
       color: var(--muted); font-size: 13px;
     }
 
-    /* ── STAT CARD ── */
-    .stat-label { font-size: 10px; color: var(--dim); font-family: var(--mono); letter-spacing: 1px; margin-bottom: 8px; }
-    .stat-value { font-size: 22px; font-weight: 700; font-family: var(--head); line-height: 1; }
+    /* Skeleton loader */
+    .skeleton {
+      background: linear-gradient(90deg,
+        rgba(255,255,255,0.03) 0%,
+        rgba(255,255,255,0.07) 50%,
+        rgba(255,255,255,0.03) 100%);
+      background-size: 200% 100%;
+      animation: shimmer 1.5s infinite;
+      border-radius: 6px;
+    }
+    @keyframes shimmer { to { background-position: -200% 0; } }
+    .skeleton-line { height: 12px; }
+    .skeleton-block { height: 44px; border-radius: 10px; }
 
+    /* ── STAT CARDS ── */
+    .stat-label {
+      font-size: 10px; color: var(--dim);
+      font-family: var(--mono); letter-spacing: 1.2px;
+      margin-bottom: 8px; text-transform: uppercase;
+    }
+    .stat-value {
+      font-size: 24px; font-weight: 700;
+      font-family: var(--head); line-height: 1;
+      letter-spacing: -0.5px;
+    }
+
+    /* ── PROGRESS BAR ── */
+    .progress-bar {
+      width: 60px; height: 3px;
+      border-radius: 2px;
+      background: rgba(255,255,255,0.05);
+      overflow: hidden; flex-shrink: 0;
+    }
+    .progress-fill {
+      height: 100%;
+      border-radius: 2px;
+      background: linear-gradient(90deg, var(--gold), #fbbf24);
+      transition: width 0.6s ease;
+    }
+
+    /* ── LIVE DOT ── */
+    .live-dot {
+      width: 7px; height: 7px; border-radius: 50%;
+      background: var(--accent);
+      box-shadow: 0 0 0 0 rgba(34,197,94,0.4);
+      animation: pulse-dot 2.5s ease-in-out infinite;
+      display: inline-block; flex-shrink: 0;
+    }
+    @keyframes pulse-dot {
+      0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.4); }
+      50% { box-shadow: 0 0 0 5px rgba(34,197,94,0); }
+    }
+
+    /* ── DIVIDER ── */
+    .section-divider {
+      display: flex; align-items: center; gap: 10px;
+      font-size: 10px; color: var(--dim);
+      font-family: var(--mono); letter-spacing: 1.2px;
+      margin: 16px 0 10px;
+    }
+    .section-divider::before, .section-divider::after {
+      content: ''; flex: 1; height: 1px;
+      background: linear-gradient(90deg, transparent, var(--border));
+    }
+    .section-divider::after {
+      background: linear-gradient(90deg, var(--border), transparent);
+    }
+
+    /* ── CONTENT FADE-IN ── */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(8px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .fade-in { animation: fadeUp 0.25s ease forwards; }
+
+    /* ── BANNER ── */
+    .banner {
+      display: flex; align-items: center; gap: 10px;
+      border-radius: var(--radius-sm);
+      padding: 10px 14px; margin-bottom: 14px;
+      font-size: 12px;
+    }
+    .banner-warning {
+      background: rgba(245,158,11,0.06);
+      border: 1px solid rgba(245,158,11,0.18);
+      color: var(--muted);
+    }
+    .banner-info {
+      background: rgba(34,197,94,0.06);
+      border: 1px solid rgba(34,197,94,0.18);
+      color: var(--muted);
+    }
+
+    /* ── CHAT BUBBLE ── */
+    .chat-bubble {
+      padding: 10px 14px; border-radius: 10px;
+      font-size: 13px; line-height: 1.7; max-width: 92%;
+    }
+    .chat-bubble-user {
+      background: rgba(34,197,94,0.08);
+      border: 1px solid rgba(34,197,94,0.18);
+      color: var(--accent);
+      align-self: flex-end;
+    }
+    .chat-bubble-ai {
+      background: rgba(15,23,42,0.9);
+      border: 1px solid var(--card-border);
+      color: var(--text);
+      align-self: flex-start;
+    }
+
+    /* ── SCROLLBAR ── */
+    ::-webkit-scrollbar { width: 4px; height: 4px; }
+    ::-webkit-scrollbar-track { background: transparent; }
+    ::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.08); border-radius: 4px; }
+    ::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.14); }
+
+    /* ── REDUCED MOTION ── */
     @media (prefers-reduced-motion: reduce) {
-      *, .loading-spinner { animation: none !important; transition: none !important; }
+      *, .loading-spinner, .live-dot, .skeleton { animation: none !important; transition: none !important; }
+    }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      body { padding: 16px 16px 32px; }
+      .grid-2 { grid-template-columns: 1fr; }
+      .grid-2-equal { grid-template-columns: 1fr; }
+      .grid-3 { grid-template-columns: 1fr 1fr; }
+    }
+    @media (max-width: 540px) {
+      .grid-3 { grid-template-columns: 1fr; }
+      .tabs-row { width: 100%; }
     }
   </style>
 </head>
 <body>
 
   <!-- ── HEADER ── -->
-  <div id="header" style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; padding-bottom: 20px; border-bottom: 1px solid var(--border);">
-    <div>
-      <div style="font-size: 21px; font-weight: 700; font-family: var(--head); letter-spacing: -0.5px; line-height: 1;">
-        <span style="color: var(--accent)">SHARE</span><span style="color: var(--dim); font-weight: 400; margin: 0 4px;">&middot;</span><span style="color: var(--text)">THE</span><span style="color: var(--dim); font-weight: 400; margin: 0 4px;">&middot;</span><span style="color: var(--accent)">WEALTH</span>
+  <header style="display: flex; align-items: center; justify-content: space-between; margin-bottom: 32px; padding-bottom: 24px; border-bottom: 1px solid rgba(30,58,95,0.5);">
+    <div style="display: flex; flex-direction: column; gap: 6px;">
+      <div style="display: flex; align-items: center; gap: 10px;">
+        <div style="font-size: 22px; font-weight: 700; font-family: var(--head); letter-spacing: -0.8px; line-height: 1;">
+          <span style="background: linear-gradient(135deg, #22c55e, #16a34a); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">SHARE</span><span style="color: rgba(71,85,105,0.6); font-weight: 300; margin: 0 5px;">·</span><span style="color: var(--text);">THE</span><span style="color: rgba(71,85,105,0.6); font-weight: 300; margin: 0 5px;">·</span><span style="background: linear-gradient(135deg, #f59e0b, #fbbf24); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;">WEALTH</span>
+        </div>
+        <span class="live-dot" title="Live data"></span>
       </div>
-      <div style="font-size: 10px; color: var(--dim); letter-spacing: 2.5px; margin-top: 6px; font-family: var(--mono);">
-        PORTFOLIO MIRROR TRACKER &middot; CONGRESS &amp; 13F
+      <div style="font-size: 10px; color: var(--dim); letter-spacing: 2.5px; font-family: var(--mono);">
+        PORTFOLIO MIRROR TRACKER &nbsp;·&nbsp; 13F HEDGE FUNDS
       </div>
     </div>
-    <div style="display: flex; gap: 8px; align-items: center;">
-      <div id="mirror-badge" style="display: none; background: var(--accent-dim); border: 1px solid var(--accent-muted); border-radius: 20px; padding: 5px 13px; font-size: 11px; color: var(--accent); font-weight: 600; font-family: var(--mono);"></div>
-      <div style="background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 6px 13px; font-size: 11px; color: var(--dim); font-family: var(--mono);">
-        sync: <span id="sync-time" style="color: var(--muted);">--</span>
+    <div style="display: flex; gap: 8px; align-items: center; flex-wrap: wrap; justify-content: flex-end;">
+      <div id="mirror-badge" style="display: none; background: linear-gradient(135deg, rgba(245,158,11,0.12), rgba(245,158,11,0.04)); border: 1px solid var(--gold-muted); border-radius: 20px; padding: 5px 13px; font-size: 11px; color: var(--gold); font-weight: 600; font-family: var(--mono);"></div>
+      <div style="background: rgba(15,23,42,0.8); backdrop-filter: blur(8px); border: 1px solid var(--card-border); border-radius: var(--radius-sm); padding: 6px 12px; font-size: 11px; color: var(--dim); font-family: var(--mono);">
+        sync <span style="color: rgba(71,85,105,0.5); margin: 0 3px;">/</span><span id="sync-time" style="color: var(--muted);">--</span>
       </div>
-      <button id="btn-refresh" class="btn" style="background: var(--accent); color: #000; border-radius: 8px; padding: 7px 14px; font-size: 11px;">
+      <button id="btn-refresh" class="btn btn-primary" style="padding: 7px 14px; font-size: 11px;" aria-label="Refresh data">
         <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg>
         Fresh
       </button>
     </div>
-  </div>
+  </header>
 
   <!-- ── BANNERS ── -->
-  <div id="fallback-banner" style="display: none; background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.2); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 12px; color: var(--muted);">
-    <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="vertical-align: middle; margin-right: 6px;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
-    Showing sample data &mdash; API data wasn't available (missing key, rate limit, or network error).
+  <div id="fallback-banner" class="banner banner-warning" style="display: none;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><path d="M10.29 3.86L1.82 18a2 2 0 0 0 1.71 3h16.94a2 2 0 0 0 1.71-3L13.71 3.86a2 2 0 0 0-3.42 0z"/><line x1="12" y1="9" x2="12" y2="13"/><line x1="12" y1="17" x2="12.01" y2="17"/></svg>
+    <span>Showing sample data — EDGAR unavailable (network or rate limit).</span>
   </div>
-  <div id="etl-banner" style="display: none; background: var(--accent-dim); border: 1px solid var(--accent-muted); border-radius: 8px; padding: 10px 14px; margin-bottom: 14px; font-size: 12px; color: var(--muted);">
-    <span style="color: var(--accent); font-family: var(--mono); font-weight: 700; font-size: 10px; letter-spacing: 1.5px; margin-right: 8px;">ETL</span><span id="etl-banner-text"></span>
+  <div id="etl-banner" class="banner banner-info" style="display: none;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" style="flex-shrink:0;"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+    <span style="font-size: 10px; font-family: var(--mono); font-weight: 700; color: var(--accent); letter-spacing: 1.2px; margin-right: 4px;">ETL</span>
+    <span id="etl-banner-text"></span>
   </div>
 
   <!-- ── TABS ── -->
-  <div class="tabs-row">
-    <button class="tab active" data-tab="politicians">
-      <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22h18"/><path d="M6 18V10"/><path d="M10 18V10"/><path d="M14 18V10"/><path d="M18 18V10"/><path d="M3 10h18"/><path d="M3 6l9-4 9 4"/></svg>
-      Politicians
-    </button>
-    <button class="tab" data-tab="funds">
+  <div class="tabs-row" role="tablist" aria-label="Navigation">
+    <button class="tab active" data-tab="funds" role="tab" aria-selected="true">
       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
       Hedge Funds
     </button>
-    <button class="tab" data-tab="portfolio">
+    <button class="tab" data-tab="portfolio" role="tab" aria-selected="false">
       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>
       My Portfolio
-      <span id="tab-badge" style="display: none; background: var(--accent); color: #000; border-radius: 10px; font-size: 9px; font-weight: 800; font-family: var(--mono); padding: 1px 6px;"></span>
+      <span id="tab-badge" style="display: none; background: linear-gradient(135deg, var(--gold), #fbbf24); color: #000; border-radius: 10px; font-size: 9px; font-weight: 800; font-family: var(--mono); padding: 1px 6px;"></span>
     </button>
-    <button class="tab" data-tab="ai">
+    <button class="tab" data-tab="ai" role="tab" aria-selected="false">
       <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
       AI Insights
     </button>
@@ -232,28 +444,70 @@
 
   <div id="content" style="min-height: 420px;"></div>
 
-  <div style="margin-top: 28px; padding-top: 16px; border-top: 1px solid var(--border); font-size: 10px; color: var(--dim); letter-spacing: 0.5px; font-family: var(--mono);">
-    DATA: Congressional disclosures (STOCK Act) &middot; 13F institutional filings &middot; For informational purposes only &middot; Not financial advice
-  </div>
+  <footer style="margin-top: 36px; padding-top: 16px; border-top: 1px solid rgba(30,58,95,0.4); font-size: 10px; color: var(--dim); letter-spacing: 0.5px; font-family: var(--mono); display: flex; align-items: center; gap: 6px;">
+    <svg xmlns="http://www.w3.org/2000/svg" width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>
+    DATA: 13F filings via SEC EDGAR &nbsp;·&nbsp; For informational purposes only &nbsp;·&nbsp; Not financial advice
+  </footer>
 
   <script>
+    document.addEventListener('DOMContentLoaded', function() {
+
     const API = '';
-    let state = { tab: 'politicians', politicians: [], funds: [], mirrored: { politicians: [], funds: [] }, prices: {}, portfolio: [], loading: true, portfolioLoading: false, refreshing: false, usingFallback: { politicians: false, funds: false } };
+
+    let state = {
+      tab: 'funds',
+      funds: [],
+      mirrored: { funds: [] },
+      prices: {},
+      portfolio: [],
+      loading: true,
+      portfolioLoading: false,
+      portfolioLoaded: false,
+      refreshing: false,
+      usingFallback: false,
+      chatMessages: [],
+    };
 
     function loadingHtml(msg) {
-      return `<div class="loading-placeholder"><div class="loading-spinner"></div><span>${msg || 'Loading\u2026'}</span></div>`;
+      return `
+        <div class="loading-placeholder fade-in">
+          <div class="loading-spinner" role="progressbar" aria-label="Loading"></div>
+          <span style="color: var(--muted); font-size: 13px;">${msg || 'Loading…'}</span>
+        </div>
+      `;
+    }
+
+    function skeletonFunds() {
+      return `
+        <div class="grid-2">
+          <div style="display: flex; flex-direction: column; gap: 8px;">
+            ${Array(5).fill(0).map(() => `
+              <div style="padding: 12px 14px; border-radius: 10px; border: 1px solid rgba(255,255,255,0.04); display: flex; align-items: center; gap: 12px;">
+                <div class="skeleton" style="width: 38px; height: 38px; border-radius: 10px; flex-shrink: 0;"></div>
+                <div style="flex: 1; display: flex; flex-direction: column; gap: 7px;">
+                  <div class="skeleton skeleton-line" style="width: 70%;"></div>
+                  <div class="skeleton skeleton-line" style="width: 45%;"></div>
+                </div>
+              </div>
+            `).join('')}
+          </div>
+          <div class="card" style="display: flex; align-items: center; justify-content: center; min-height: 320px;">
+            <div class="loading-spinner"></div>
+          </div>
+        </div>
+      `;
     }
 
     function fmtCurrency(n) {
-      if (n >= 1e9) return '$' + (n/1e9).toFixed(1) + 'B';
-      if (n >= 1e6) return '$' + (n/1e6).toFixed(1) + 'M';
+      if (n >= 1e9) return '$' + (n / 1e9).toFixed(1) + 'B';
+      if (n >= 1e6) return '$' + (n / 1e6).toFixed(1) + 'M';
       return '$' + n.toLocaleString();
     }
     function fmtPct(n) { return (n > 0 ? '+' : '') + n.toFixed(2) + '%'; }
 
     async function fetchJson(url, opts) {
       const r = await fetch(API + url, opts);
-      if (!r.ok) throw new Error(r.statusText);
+      if (!r.ok) throw new Error(r.statusText || String(r.status));
       return r.json();
     }
 
@@ -264,13 +518,13 @@
         const txt = document.getElementById('etl-banner-text');
         if (!el || !txt) return;
         if (r.last_run_failed) {
-          el.style.display = 'block';
-          txt.textContent = 'Last run failed: ' + String(r.last_run_error || 'unknown').slice(0, 240);
+          el.style.display = 'flex';
+          txt.textContent = 'Last run failed: ' + String(r.last_run_error || 'unknown').slice(0, 200);
         } else if (!r.last_success_at) {
-          el.style.display = 'block';
-          txt.textContent = 'No warehouse snapshot yet. Run stw etl run or use \u21bb Fresh.';
+          el.style.display = 'flex';
+          txt.textContent = 'No warehouse snapshot yet. Run stw etl run or use ↻ Fresh.';
         } else if (r.stale) {
-          el.style.display = 'block';
+          el.style.display = 'flex';
           txt.textContent = 'Snapshot may be stale (last success: ' + r.last_success_at + ').';
         } else {
           el.style.display = 'none';
@@ -282,161 +536,120 @@
       state.loading = true;
       render();
       try {
-        const [polRes, fundRes, mirRes] = await Promise.all([
-          fetchJson('/api/politicians'),
+        const [fundRes, mirRes] = await Promise.all([
           fetchJson('/api/hedge-funds'),
           fetchJson('/api/mirrored'),
         ]);
-        state.politicians = polRes.politicians || [];
         state.funds = fundRes.funds || [];
-        state.mirrored = mirRes.mirrored || { politicians: [], funds: [] };
-        state.usingFallback = { politicians: !!polRes.using_fallback, funds: !!fundRes.using_fallback };
-        const symbols = [...new Set([
-          ...state.politicians.flatMap(p => p.trades.map(t => t.ticker)),
-          ...state.funds.flatMap(f => f.holdings.map(h => h.ticker)),
-        ])];
+        state.mirrored = mirRes.mirrored || { funds: [] };
+        state.usingFallback = !!fundRes.using_fallback;
+        const symbols = [...new Set(state.funds.flatMap(f => f.holdings.map(h => h.ticker)))];
         if (symbols.length) {
-          const priceRes = await fetchJson('/api/prices?symbols=' + symbols.join(','));
-          state.prices = priceRes.prices || {};
+          try {
+            const priceRes = await fetchJson('/api/prices?symbols=' + symbols.join(','));
+            state.prices = priceRes.prices || {};
+          } catch (_) {}
         }
-        document.getElementById('sync-time').textContent = 'just now';
+        const st = document.getElementById('sync-time');
+        if (st) st.textContent = 'just now';
       } catch (e) {
-        console.error(e);
-        document.getElementById('sync-time').textContent = 'error';
+        console.error('load error:', e);
+        const st = document.getElementById('sync-time');
+        if (st) st.textContent = 'error';
       }
       state.loading = false;
       render();
       fetchEtlStatus();
     }
 
-    async function toggleMirror(type, name) {
+    async function toggleMirror(name) {
       try {
         const res = await fetchJson('/api/mirror', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ type: type === 'politicians' ? 'politicians' : 'funds', name }),
+          body: JSON.stringify({ type: 'funds', name }),
         });
         state.mirrored = res.mirrored;
         render();
-      } catch (e) { console.error(e); }
+      } catch (e) { console.error('toggleMirror:', e); }
     }
 
-    const iconBuilding = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 22h18"/><path d="M6 18V10"/><path d="M10 18V10"/><path d="M14 18V10"/><path d="M18 18V10"/><path d="M3 10h18"/><path d="M3 6l9-4 9 4"/></svg>`;
     const iconTrend = `<svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>`;
-    const iconBarChart = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`;
-
-    function renderPoliticians() {
-      const sel = state.selectedPolitician;
-      return `
-        <div class="grid-2" style="height: 100%;">
-          <div style="display: flex; flex-direction: column; gap: 8px;">
-            ${(state.politicians || []).map(p => {
-              const isMirrored = state.mirrored.politicians.includes(p.name);
-              const isSelected = sel && sel.name === p.name;
-              const col = p.party === 'D' ? 'blue' : p.party === 'R' ? 'red' : 'green';
-              return `
-                <div class="sidebar-item ${isSelected ? 'selected' : ''}" data-select-politician="${p.name}" tabindex="0">
-                  <div class="avatar avatar-${col}">${p.avatar}</div>
-                  <div style="flex: 1; min-width: 0;">
-                    <div style="font-size: 13px; font-weight: 600;">${p.name}</div>
-                    <div style="font-size: 11px; color: var(--muted); margin-top: 2px; font-family: var(--mono);">${p.trades.length} trades</div>
-                  </div>
-                  <button class="btn btn-mirror ${isMirrored ? 'btn-mirror-on' : 'btn-mirror-off'}" data-toggle="politicians" data-name="${p.name}">${isMirrored ? '&#10003; ON' : 'MIRROR'}</button>
-                </div>
-              `;
-            }).join('')}
-          </div>
-          <div class="card" style="overflow-y: auto;">
-            ${!sel ? `
-              <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--muted); font-size: 13px; gap: 8px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                Select a politician to view their trades
-              </div>
-            ` : `
-              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
-                <div class="avatar avatar-${sel.party === 'D' ? 'blue' : sel.party === 'R' ? 'red' : 'green'}">${sel.avatar}</div>
-                <div>
-                  <div style="font-size: 16px; font-weight: 700; font-family: var(--head);">${sel.name}</div>
-                  <div style="font-size: 10px; color: var(--muted); margin-top: 4px; font-family: var(--mono); letter-spacing: 1px;">CONGRESSIONAL DISCLOSURE TRADES</div>
-                </div>
-              </div>
-              <table>
-                <thead><tr><th>TICKER</th><th>ACTION</th><th>SHARES</th><th>FILED</th><th>CURRENT</th><th>P&amp;L</th><th>DATE</th></tr></thead>
-                <tbody>
-                  ${sel.trades.map(t => {
-                    const curr = state.prices[t.ticker] || t.price;
-                    const pl = ((curr - t.price) / t.price * 100) * (t.action === 'SELL' ? -1 : 1);
-                    return `
-                      <tr>
-                        <td style="font-weight: 800; color: var(--accent); font-size: 13px; font-family: var(--mono);">${t.ticker}</td>
-                        <td><span class="pill ${t.action === 'BUY' ? 'pill-green' : 'pill-red'}">${t.action}</span></td>
-                        <td style="font-family: var(--mono); font-size: 12px;">${t.shares}</td>
-                        <td style="font-family: var(--mono); font-size: 12px;">$${t.price.toFixed(2)}</td>
-                        <td style="font-family: var(--mono); font-size: 12px;">$${curr.toFixed(2)}</td>
-                        <td style="color: ${pl >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700; font-family: var(--mono); font-size: 12px;">${fmtPct(pl)}</td>
-                        <td style="color: var(--muted); font-size: 11px; font-family: var(--mono);">${t.date}</td>
-                      </tr>
-                    `;
-                  }).join('')}
-                </tbody>
-              </table>
-            `}
-          </div>
-        </div>
-      `;
-    }
+    const iconEmpty = `<svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><line x1="18" y1="20" x2="18" y2="10"/><line x1="12" y1="20" x2="12" y2="4"/><line x1="6" y1="20" x2="6" y2="14"/></svg>`;
 
     function renderFunds() {
       const sel = state.selectedFund;
       return `
-        <div class="grid-2">
-          <div style="display: flex; flex-direction: column; gap: 8px;">
+        <div class="grid-2 fade-in">
+          <div style="display: flex; flex-direction: column; gap: 7px; overflow-y: auto; max-height: 640px; padding-right: 2px;">
             ${(state.funds || []).map(f => {
-              const isMirrored = state.mirrored.funds.includes(f.name);
+              const isMirrored = (state.mirrored.funds || []).includes(f.name);
               const isSelected = sel && sel.name === f.name;
               return `
-                <div class="sidebar-item ${isSelected ? 'selected' : ''}" data-select-fund="${f.name}" tabindex="0">
-                  <div class="avatar avatar-yellow">${f.avatar}</div>
+                <div class="sidebar-item ${isSelected ? 'selected' : ''}" data-select-fund="${f.name}" tabindex="0" role="button" aria-pressed="${isSelected}">
+                  <div class="avatar avatar-gold">${f.avatar}</div>
                   <div style="flex: 1; min-width: 0;">
-                    <div style="font-size: 13px; font-weight: 600;">${f.name}</div>
-                    <div style="font-size: 11px; color: var(--muted); margin-top: 2px; font-family: var(--mono);">${f.manager} &middot; ${f.aum}</div>
+                    <div style="font-size: 13px; font-weight: 600; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${f.name}</div>
+                    <div style="font-size: 11px; color: var(--muted); margin-top: 2px; font-family: var(--mono);">${f.manager} &nbsp;·&nbsp; ${f.aum}</div>
                   </div>
-                  <button class="btn btn-mirror ${isMirrored ? 'btn-mirror-fund-on' : 'btn-mirror-fund-off'}" data-toggle="funds" data-name="${f.name}">${isMirrored ? '&#10003; ON' : 'MIRROR'}</button>
+                  <button class="btn btn-mirror ${isMirrored ? 'btn-mirror-fund-on' : 'btn-mirror-fund-off'}" data-name="${f.name}" aria-label="${isMirrored ? 'Stop mirroring ' + f.name : 'Mirror ' + f.name}">
+                    ${isMirrored ? `<svg width="9" height="9" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><polyline points="20 6 9 17 4 12"/></svg> ON` : 'MIRROR'}
+                  </button>
                 </div>
               `;
             }).join('')}
+            ${state.funds.length === 0 ? `<div style="padding: 20px; text-align: center; color: var(--dim); font-size: 12px;">No fund data loaded</div>` : ''}
           </div>
-          <div class="card" style="overflow-y: auto;">
+
+          <div class="card" style="overflow-y: auto; max-height: 640px;">
             ${!sel ? `
-              <div style="display: flex; align-items: center; justify-content: center; height: 100%; color: var(--muted); font-size: 13px; gap: 8px;">
-                <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="9 18 15 12 9 6"/></svg>
-                Select a fund to view their 13F holdings
+              <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100%; min-height: 280px; gap: 12px; color: var(--dim);">
+                <div style="width: 48px; height: 48px; border-radius: 12px; background: rgba(245,158,11,0.06); border: 1px solid rgba(245,158,11,0.12); display: flex; align-items: center; justify-content: center;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="#f59e0b" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="22 7 13.5 15.5 8.5 10.5 2 17"/><polyline points="16 7 22 7 22 13"/></svg>
+                </div>
+                <div style="font-size: 13px; font-weight: 600; color: var(--muted);">Select a fund</div>
+                <div style="font-size: 11px; color: var(--dim); text-align: center; max-width: 200px; line-height: 1.7;">Choose a fund from the left to view their latest 13F holdings</div>
               </div>
             ` : `
-              <div style="display: flex; align-items: center; gap: 12px; margin-bottom: 20px; padding-bottom: 16px; border-bottom: 1px solid var(--border);">
-                <div class="avatar avatar-yellow">${sel.avatar}</div>
+              <div style="display: flex; align-items: center; gap: 14px; margin-bottom: 20px; padding-bottom: 18px; border-bottom: 1px solid rgba(30,58,95,0.5);">
+                <div class="avatar avatar-gold" style="width: 44px; height: 44px; font-size: 13px; border-radius: 12px;">${sel.avatar}</div>
                 <div>
-                  <div style="font-size: 16px; font-weight: 700; font-family: var(--head);">${sel.name}</div>
-                  <div style="font-size: 10px; color: var(--muted); margin-top: 4px; font-family: var(--mono); letter-spacing: 1px;">${sel.manager} &middot; AUM ${sel.aum} &middot; 13F FILING</div>
+                  <div style="font-size: 17px; font-weight: 700; font-family: var(--head); letter-spacing: -0.3px;">${sel.name}</div>
+                  <div style="font-size: 11px; color: var(--dim); margin-top: 4px; font-family: var(--mono); letter-spacing: 0.8px;">${sel.manager} &nbsp;·&nbsp; AUM ${sel.aum} &nbsp;·&nbsp; 13F FILING</div>
+                </div>
+                <div style="margin-left: auto;">
+                  <span class="pill pill-gold">${sel.holdings.length} POSITIONS</span>
                 </div>
               </div>
               <table>
-                <thead><tr><th>TICKER</th><th>WEIGHT</th><th>SHARES</th><th>VALUE</th><th>MOVE</th></tr></thead>
+                <thead>
+                  <tr>
+                    <th>TICKER</th>
+                    <th>WEIGHT</th>
+                    <th>SHARES</th>
+                    <th>VALUE</th>
+                    <th>MOVE</th>
+                  </tr>
+                </thead>
                 <tbody>
-                  ${sel.holdings.map(h => `
+                  ${sel.holdings.map((h, i) => `
                     <tr>
-                      <td style="font-weight: 800; color: var(--yellow); font-size: 13px; font-family: var(--mono);">${h.ticker}</td>
+                      <td>
+                        <span style="font-weight: 800; color: var(--gold); font-size: 13px; font-family: var(--mono); letter-spacing: 0.3px;">${h.ticker}</span>
+                      </td>
                       <td>
                         <div style="display: flex; align-items: center; gap: 8px;">
-                          <div style="width: 56px; height: 3px; border-radius: 2px; background: var(--border); overflow: hidden; flex-shrink: 0;">
-                            <div style="width: ${Math.min(h.pct * 2, 100)}%; height: 100%; background: var(--yellow); border-radius: 2px;"></div>
+                          <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${Math.min(h.pct * 2, 100)}%;"></div>
                           </div>
-                          <span style="font-family: var(--mono); font-size: 11px;">${h.pct}%</span>
+                          <span style="font-family: var(--mono); font-size: 11px; color: var(--muted);">${h.pct}%</span>
                         </div>
                       </td>
-                      <td style="font-family: var(--mono); font-size: 12px;">${h.shares}</td>
-                      <td style="font-family: var(--mono); font-size: 12px;">${h.value}</td>
-                      <td style="color: ${h.change >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700; font-family: var(--mono); font-size: 12px;">${fmtPct(h.change)}</td>
+                      <td style="font-family: var(--mono); font-size: 12px; color: var(--muted);">${h.shares}</td>
+                      <td style="font-family: var(--mono); font-size: 12px; color: var(--muted);">${h.value}</td>
+                      <td>
+                        <span class="pill ${h.change >= 0 ? 'pill-green' : 'pill-red'}">${fmtPct(h.change)}</span>
+                      </td>
                     </tr>
                   `).join('')}
                 </tbody>
@@ -458,10 +671,12 @@
       const positions = state.portfolio;
       if (positions.length === 0) {
         return `
-          <div style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 300px; gap: 12px; color: var(--muted);">
-            <div style="color: var(--dim);">${iconBarChart}</div>
-            <div style="font-size: 14px; font-weight: 600;">No mirrors active yet</div>
-            <div style="font-size: 12px; color: var(--dim);">Enable mirrors from the Politicians or Hedge Funds tabs</div>
+          <div class="fade-in" style="display: flex; flex-direction: column; align-items: center; justify-content: center; height: 320px; gap: 14px;">
+            <div style="width: 56px; height: 56px; border-radius: 14px; background: rgba(34,197,94,0.06); border: 1px solid rgba(34,197,94,0.12); display: flex; align-items: center; justify-content: center; color: var(--dim);">
+              ${iconEmpty}
+            </div>
+            <div style="font-size: 15px; font-weight: 600; color: var(--muted);">No mirrors active</div>
+            <div style="font-size: 12px; color: var(--dim); text-align: center; max-width: 220px; line-height: 1.7;">Enable mirrors from the Hedge Funds tab to start tracking</div>
           </div>
         `;
       }
@@ -469,97 +684,90 @@
       const avgPl = positions.reduce((s, p) => s + p.pl, 0) / positions.length;
       const bySource = {};
       positions.forEach(p => {
-        const key = p.type === 'Politician' ? 'politicians' : 'funds';
-        if (!bySource[key]) bySource[key] = {};
-        if (!bySource[key][p.source]) bySource[key][p.source] = [];
-        bySource[key][p.source].push(p);
+        if (!bySource[p.source]) bySource[p.source] = [];
+        bySource[p.source].push(p);
       });
       const posTable = (pos) => `
         <table>
-          <thead><tr><th>TICKER</th><th>SHARES</th><th>AVG COST</th><th>CURRENT</th><th>P&amp;L</th><th>VALUE</th></tr></thead>
+          <thead>
+            <tr>
+              <th>TICKER</th><th>SHARES</th><th>AVG COST</th><th>CURRENT</th><th>P&amp;L</th><th>VALUE</th>
+            </tr>
+          </thead>
           <tbody>
             ${pos.map(p => `
               <tr>
-                <td style="font-weight: 800; color: var(--accent); font-size: 13px; font-family: var(--mono);">${p.ticker}</td>
-                <td style="font-family: var(--mono); font-size: 12px;">${p.shares}</td>
-                <td style="font-family: var(--mono); font-size: 12px;">$${p.cost.toFixed(2)}</td>
-                <td style="font-family: var(--mono); font-size: 12px;">$${p.current.toFixed(2)}</td>
-                <td style="color: ${p.pl >= 0 ? 'var(--accent)' : 'var(--red)'}; font-weight: 700; font-family: var(--mono); font-size: 12px;">${fmtPct(p.pl)}</td>
-                <td style="font-family: var(--mono); font-size: 12px;">${fmtCurrency(p.value)}</td>
+                <td><span style="font-weight: 800; color: var(--gold); font-size: 13px; font-family: var(--mono);">${p.ticker}</span></td>
+                <td style="font-family: var(--mono); font-size: 12px; color: var(--muted);">${p.shares}</td>
+                <td style="font-family: var(--mono); font-size: 12px; color: var(--muted);">$${p.cost.toFixed(2)}</td>
+                <td style="font-family: var(--mono); font-size: 12px; color: var(--muted);">$${p.current.toFixed(2)}</td>
+                <td><span class="pill ${p.pl >= 0 ? 'pill-green' : 'pill-red'}">${fmtPct(p.pl)}</span></td>
+                <td style="font-family: var(--mono); font-size: 12px; font-weight: 600;">${fmtCurrency(p.value)}</td>
               </tr>
             `).join('')}
           </tbody>
         </table>
       `;
-      const polSection = (state.mirrored.politicians || []).length > 0 && bySource.politicians ? `
-        <div class="card" style="margin-bottom: 16px;">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
-            <span style="color: var(--muted);">${iconBuilding}</span>
-            <div style="font-size: 10px; font-weight: 700; font-family: var(--mono); color: var(--muted); letter-spacing: 1.2px;">POLITICIANS</div>
-          </div>
-          ${Object.entries(bySource.politicians).map(([source, pos]) => `
-            <div style="margin-bottom: 16px;">
-              <div style="font-size: 13px; font-weight: 600; color: var(--text); margin-bottom: 10px;">${source}</div>
-              ${posTable(pos)}
-            </div>
-          `).join('')}
-        </div>
-      ` : '';
-      const fundSection = (state.mirrored.funds || []).length > 0 && bySource.funds ? `
-        <div class="card">
-          <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px; padding-bottom: 12px; border-bottom: 1px solid var(--border);">
-            <span style="color: var(--yellow);">${iconTrend}</span>
-            <div style="font-size: 10px; font-weight: 700; font-family: var(--mono); color: var(--muted); letter-spacing: 1.2px;">HEDGE FUNDS</div>
-          </div>
-          ${Object.entries(bySource.funds).map(([source, pos]) => `
-            <div style="margin-bottom: 16px;">
-              <div style="font-size: 13px; font-weight: 600; color: var(--yellow); margin-bottom: 10px;">${source}</div>
-              ${posTable(pos)}
-            </div>
-          `).join('')}
-        </div>
-      ` : '';
       return `
-        <div>
+        <div class="fade-in">
           <div class="grid-3" style="margin-bottom: 20px;">
-            <div class="card" style="padding: 16px 20px;">
+            <div class="card" style="padding: 18px 20px;">
               <div class="stat-label">TOTAL VALUE</div>
               <div class="stat-value" style="color: var(--accent);">${fmtCurrency(totalValue)}</div>
             </div>
-            <div class="card" style="padding: 16px 20px;">
+            <div class="card" style="padding: 18px 20px;">
               <div class="stat-label">POSITIONS</div>
-              <div class="stat-value" style="color: var(--yellow);">${positions.length}</div>
+              <div class="stat-value" style="color: var(--gold);">${positions.length}</div>
             </div>
-            <div class="card" style="padding: 16px 20px;">
+            <div class="card" style="padding: 18px 20px;">
               <div class="stat-label">AVG P&amp;L</div>
               <div class="stat-value" style="color: ${avgPl >= 0 ? 'var(--accent)' : 'var(--red)'};">${fmtPct(avgPl)}</div>
             </div>
           </div>
-          ${polSection}
-          ${fundSection}
+          <div class="card">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 18px; padding-bottom: 14px; border-bottom: 1px solid rgba(30,58,95,0.5);">
+              <span style="color: var(--gold);">${iconTrend}</span>
+              <div style="font-size: 10px; font-weight: 700; font-family: var(--mono); color: var(--muted); letter-spacing: 1.2px;">HEDGE FUND POSITIONS</div>
+            </div>
+            ${Object.entries(bySource).map(([source, pos]) => `
+              <div style="margin-bottom: 20px;">
+                <div style="font-size: 12px; font-weight: 700; color: var(--gold); font-family: var(--mono); letter-spacing: 0.5px; margin-bottom: 12px; display: flex; align-items: center; gap: 6px;">
+                  <div style="width: 3px; height: 14px; background: var(--gold); border-radius: 2px;"></div>
+                  ${source}
+                </div>
+                ${posTable(pos)}
+              </div>
+            `).join('')}
+          </div>
         </div>
       `;
     }
 
     function renderAI() {
       return `
-        <div class="grid-2-equal" style="height: 100%;">
-          <div class="card" style="display: flex; flex-direction: column; gap: 0;">
-            <div style="font-size: 10px; color: var(--dim); font-family: var(--mono); letter-spacing: 1.2px; margin-bottom: 14px;">PORTFOLIO ANALYSIS</div>
-            <button id="btn-analyze" class="btn" style="background: var(--accent); color: #000; border-radius: 8px; padding: 10px 20px; font-size: 12px; margin-bottom: 16px; justify-content: center; letter-spacing: 0.5px;">
+        <div class="grid-2-equal fade-in" style="height: 100%;">
+          <div class="card" style="display: flex; flex-direction: column; gap: 0; min-height: 400px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#22c55e" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
+              <div style="font-size: 10px; color: var(--muted); font-family: var(--mono); letter-spacing: 1.2px; font-weight: 700;">PORTFOLIO ANALYSIS</div>
+            </div>
+            <button id="btn-analyze" class="btn btn-primary" style="padding: 10px 20px; font-size: 12px; margin-bottom: 16px; justify-content: center;">
               <svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>
               Analyze My Mirrors
             </button>
-            <div id="ai-insight" style="flex: 1; overflow-y: auto; font-size: 12px; line-height: 1.8; white-space: pre-wrap; color: var(--muted); font-family: var(--sans);">
-              Enable mirrors from other tabs, then click Analyze to get AI-powered insights on your mirrored portfolio.
+            <div id="ai-insight" style="flex: 1; overflow-y: auto; font-size: 12px; line-height: 1.9; white-space: pre-wrap; color: var(--muted); font-family: var(--sans);">
+              Mirror some funds, then click Analyze for AI-powered insights.
             </div>
           </div>
-          <div class="card" style="display: flex; flex-direction: column; gap: 0;">
-            <div style="font-size: 10px; color: var(--dim); font-family: var(--mono); letter-spacing: 1.2px; margin-bottom: 14px;">ASK YOUR PORTFOLIO ANALYST</div>
-            <div id="chat-messages" style="flex: 1; overflow-y: auto; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px;"></div>
+          <div class="card" style="display: flex; flex-direction: column; gap: 0; min-height: 400px;">
+            <div style="display: flex; align-items: center; gap: 8px; margin-bottom: 16px;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
+              <div style="font-size: 10px; color: var(--muted); font-family: var(--mono); letter-spacing: 1.2px; font-weight: 700;">ASK YOUR PORTFOLIO ANALYST</div>
+            </div>
+            <div id="chat-messages" style="flex: 1; overflow-y: auto; margin-bottom: 12px; display: flex; flex-direction: column; gap: 10px; min-height: 120px;"></div>
             <div style="display: flex; gap: 8px;">
-              <input id="chat-input" type="text" placeholder="e.g. Should I be worried about tech concentration?" style="flex: 1;">
-              <button id="chat-send" class="btn" style="background: var(--accent); color: #000; border-radius: 8px; padding: 10px 14px; flex-shrink: 0;">
+              <input id="chat-input" type="text" placeholder="e.g. Should I be worried about tech concentration?" style="flex: 1;" aria-label="Chat message">
+              <button id="chat-send" class="btn btn-primary" style="padding: 10px 14px; flex-shrink: 0;" aria-label="Send message">
                 <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
               </button>
             </div>
@@ -569,39 +777,42 @@
     }
 
     function render() {
-      const total = (state.mirrored.politicians || []).length + (state.mirrored.funds || []).length;
+      const total = (state.mirrored.funds || []).length;
       const badge = document.getElementById('tab-badge');
       const mirrorBadge = document.getElementById('mirror-badge');
       const fallbackBanner = document.getElementById('fallback-banner');
-      if (fallbackBanner) {
-        fallbackBanner.style.display = (state.usingFallback.politicians || state.usingFallback.funds) ? 'block' : 'none';
+      if (fallbackBanner) fallbackBanner.style.display = state.usingFallback ? 'flex' : 'none';
+      if (badge) {
+        if (total > 0) {
+          badge.style.display = 'inline';
+          badge.textContent = total;
+        } else {
+          badge.style.display = 'none';
+        }
       }
-      if (total > 0) {
-        badge.style.display = 'inline';
-        badge.textContent = total;
-        mirrorBadge.style.display = 'block';
-        mirrorBadge.textContent = total + ' mirror' + (total !== 1 ? 's' : '') + ' active';
-      } else {
-        badge.style.display = 'none';
-        mirrorBadge.style.display = 'none';
+      if (mirrorBadge) {
+        if (total > 0) {
+          mirrorBadge.style.display = 'block';
+          mirrorBadge.textContent = total + ' mirror' + (total !== 1 ? 's' : '') + ' active';
+        } else {
+          mirrorBadge.style.display = 'none';
+        }
       }
 
-      if (state.tab === 'politicians' && !state.selectedPolitician && (state.mirrored.politicians || []).length > 0) {
-        state.selectedPolitician = state.politicians.find(p => state.mirrored.politicians.includes(p.name)) || null;
+      if (state.tab === 'funds' && !state.selectedFund && total > 0) {
+        state.selectedFund = state.funds.find(f => (state.mirrored.funds || []).includes(f.name)) || null;
       }
-      if (state.tab === 'funds' && !state.selectedFund && (state.mirrored.funds || []).length > 0) {
-        state.selectedFund = state.funds.find(f => state.mirrored.funds.includes(f.name)) || null;
-      }
+
+      const contentEl = document.getElementById('content');
+      if (!contentEl) return;
 
       let html = '';
-      if (state.loading && (state.politicians.length === 0 && state.funds.length === 0)) {
-        html = loadingHtml('Fetching politicians & hedge funds\u2026');
+      if (state.loading && state.funds.length === 0) {
+        html = skeletonFunds();
       } else if (state.refreshing) {
-        html = loadingHtml('Pulling fresh data\u2026');
+        html = loadingHtml('Pulling fresh data…');
       } else if (state.tab === 'portfolio' && state.portfolioLoading) {
-        html = loadingHtml('Loading portfolio\u2026');
-      } else if (state.tab === 'politicians') {
-        html = renderPoliticians();
+        html = loadingHtml('Loading portfolio…');
       } else if (state.tab === 'funds') {
         html = renderFunds();
       } else if (state.tab === 'portfolio') {
@@ -610,88 +821,79 @@
         html = renderAI();
       }
 
-      document.getElementById('content').innerHTML = html;
+      contentEl.innerHTML = html;
 
       document.querySelectorAll('.tab').forEach(t => {
         t.classList.toggle('active', t.dataset.tab === state.tab);
-      });
-
-      document.querySelectorAll('[data-tab]').forEach(b => {
-        if (b.classList.contains('tab')) return;
-        b.onclick = () => { state.tab = b.dataset.tab; render(); };
-      });
-
-      document.querySelectorAll('[data-select-politician]').forEach(el => {
-        el.onclick = (e) => {
-          if (e.target.closest('button')) return;
-          state.selectedPolitician = state.politicians.find(p => p.name === el.dataset.selectPolitician);
-          state.selectedFund = null;
+        t.setAttribute('aria-selected', t.dataset.tab === state.tab ? 'true' : 'false');
+        t.onclick = () => {
+          state.tab = t.dataset.tab;
+          if (state.tab === 'portfolio') state.portfolioLoaded = false;
           render();
         };
       });
+
       document.querySelectorAll('[data-select-fund]').forEach(el => {
         el.onclick = (e) => {
           if (e.target.closest('button')) return;
-          state.selectedFund = state.funds.find(f => f.name === el.dataset.selectFund);
-          state.selectedPolitician = null;
+          state.selectedFund = state.funds.find(f => f.name === el.dataset.selectFund) || null;
           render();
+        };
+        el.onkeydown = (e) => {
+          if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); el.click(); }
         };
       });
 
-      document.querySelectorAll('[data-toggle]').forEach(btn => {
-        btn.onclick = (e) => {
-          e.stopPropagation();
-          toggleMirror(btn.dataset.toggle, btn.dataset.name);
-        };
+      document.querySelectorAll('.btn-mirror-fund-on, .btn-mirror-fund-off').forEach(btn => {
+        btn.onclick = (e) => { e.stopPropagation(); toggleMirror(btn.dataset.name); };
       });
 
       if (state.tab === 'portfolio' && !state.portfolioLoaded) {
         state.portfolioLoaded = true;
         state.portfolioLoading = true;
         render();
-        loadPortfolio().then(() => {
-          state.portfolioLoading = false;
-          render();
-        });
+        loadPortfolio().then(() => { state.portfolioLoading = false; render(); });
       }
 
       if (state.tab === 'ai') {
         const analyzeBtn = document.getElementById('btn-analyze');
         const insightEl = document.getElementById('ai-insight');
-        if (analyzeBtn) {
+        if (analyzeBtn && insightEl) {
           analyzeBtn.onclick = async () => {
             analyzeBtn.disabled = true;
-            analyzeBtn.textContent = '\u23F3 Analyzing\u2026';
+            analyzeBtn.innerHTML = `<div class="loading-spinner loading-spinner-sm"></div> Analyzing…`;
             try {
               const res = await fetchJson('/api/ai/analyze', { method: 'POST' });
               insightEl.textContent = res.insight || 'No response.';
               insightEl.style.color = 'var(--text)';
             } catch (e) {
               insightEl.textContent = 'Error: ' + e.message;
+              insightEl.style.color = 'var(--red)';
             }
             analyzeBtn.disabled = false;
-            analyzeBtn.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Analyze My Mirrors';
+            analyzeBtn.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="13" height="13" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg> Analyze My Mirrors`;
           };
         }
+
         const chatInput = document.getElementById('chat-input');
         const chatSend = document.getElementById('chat-send');
         const chatMessages = document.getElementById('chat-messages');
-        if (chatSend && chatInput) {
+        if (chatSend && chatInput && chatMessages) {
           state.chatMessages = state.chatMessages || [];
           chatMessages.innerHTML = state.chatMessages.map(m => `
-            <div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; line-height: 1.7; background: ${m.role === 'user' ? 'var(--accent-dim)' : 'var(--bg)'}; color: ${m.role === 'user' ? 'var(--accent)' : 'var(--text)'}; align-self: ${m.role === 'user' ? 'flex-end' : 'flex-start'}; max-width: 90%; border: 1px solid ${m.role === 'user' ? 'var(--accent-muted)' : 'var(--border)'};">${m.text}</div>
+            <div class="chat-bubble ${m.role === 'user' ? 'chat-bubble-user' : 'chat-bubble-ai'}">${m.text}</div>
           `).join('');
           const send = async () => {
             const q = chatInput.value.trim();
             if (!q) return;
             chatInput.value = '';
             state.chatMessages.push({ role: 'user', text: q });
-            chatMessages.innerHTML += `<div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--accent-dim); color: var(--accent); align-self: flex-end; max-width: 90%; border: 1px solid var(--accent-muted);">${q}</div>`;
+            chatMessages.innerHTML += `<div class="chat-bubble chat-bubble-user">${q}</div>`;
             chatSend.disabled = true;
             const loadingEl = document.createElement('div');
-            loadingEl.id = 'chat-loading';
-            loadingEl.style.cssText = 'padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--bg); align-self: flex-start; max-width: 90%; border: 1px solid var(--border); display: flex; align-items: center; gap: 8px;';
-            loadingEl.innerHTML = '<div class="loading-spinner loading-spinner-sm"></div><span style="color: var(--muted);">Thinking\u2026</span>';
+            loadingEl.className = 'chat-bubble chat-bubble-ai';
+            loadingEl.style.cssText = 'display: flex; align-items: center; gap: 8px;';
+            loadingEl.innerHTML = '<div class="loading-spinner loading-spinner-sm"></div><span style="color: var(--muted);">Thinking…</span>';
             chatMessages.appendChild(loadingEl);
             chatMessages.scrollTop = chatMessages.scrollHeight;
             try {
@@ -702,11 +904,10 @@
               });
               loadingEl.remove();
               state.chatMessages.push({ role: 'assistant', text: res.reply });
-              chatMessages.innerHTML += `<div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--bg); color: var(--text); align-self: flex-start; max-width: 90%; border: 1px solid var(--border);">${res.reply}</div>`;
+              chatMessages.innerHTML += `<div class="chat-bubble chat-bubble-ai">${res.reply}</div>`;
             } catch (e) {
               loadingEl.remove();
-              state.chatMessages.push({ role: 'assistant', text: 'Error: ' + e.message });
-              chatMessages.innerHTML += `<div style="padding: 10px 14px; border-radius: 8px; font-size: 13px; background: var(--bg); color: var(--red); align-self: flex-start; max-width: 90%; border: 1px solid var(--border);">Error: ${e.message}</div>`;
+              chatMessages.innerHTML += `<div class="chat-bubble chat-bubble-ai" style="color: var(--red);">Error: ${e.message}</div>`;
             }
             chatSend.disabled = false;
             chatMessages.scrollTop = chatMessages.scrollHeight;
@@ -717,44 +918,42 @@
       }
     }
 
-    document.querySelectorAll('.tab').forEach(t => {
-      t.onclick = () => {
-        state.tab = t.dataset.tab;
-        if (state.tab === 'portfolio') state.portfolioLoaded = false;
-        render();
-      };
-    });
-
     const btnRefresh = document.getElementById('btn-refresh');
     if (btnRefresh) {
       btnRefresh.onclick = async () => {
         btnRefresh.disabled = true;
-        btnRefresh.textContent = '\u23F3';
+        btnRefresh.innerHTML = '<div class="loading-spinner loading-spinner-sm"></div>';
         state.refreshing = true;
         render();
         try {
-          const res = await fetchJson('/api/politicians/refresh', { method: 'POST' });
-          state.politicians = res.politicians || [];
-          state.usingFallback.politicians = !!res.using_fallback;
-          document.getElementById('sync-time').textContent = 'just now';
-          const symbols = [...new Set(state.politicians.flatMap(p => p.trades.map(t => t.ticker)))];
+          const res = await fetchJson('/api/hedge-funds');
+          state.funds = res.funds || [];
+          state.usingFallback = !!res.using_fallback;
+          const st = document.getElementById('sync-time');
+          if (st) st.textContent = 'just now';
+          const symbols = [...new Set(state.funds.flatMap(f => f.holdings.map(h => h.ticker)))];
           if (symbols.length) {
-            const priceRes = await fetchJson('/api/prices?symbols=' + symbols.join(','));
-            state.prices = { ...state.prices, ...(priceRes.prices || {}) };
+            try {
+              const priceRes = await fetchJson('/api/prices?symbols=' + symbols.join(','));
+              state.prices = priceRes.prices || {};
+            } catch (_) {}
           }
         } catch (e) {
-          console.error(e);
-          document.getElementById('sync-time').textContent = 'error';
+          console.error('refresh:', e);
+          const st = document.getElementById('sync-time');
+          if (st) st.textContent = 'error';
         }
         state.refreshing = false;
         btnRefresh.disabled = false;
-        btnRefresh.innerHTML = '<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg> Fresh';
+        btnRefresh.innerHTML = `<svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="1 4 1 10 7 10"/><polyline points="23 20 23 14 17 14"/><path d="M20.49 9A9 9 0 0 0 5.64 5.64L1 10m22 4-4.64 4.36A9 9 0 0 1 3.51 15"/></svg> Fresh`;
         render();
         fetchEtlStatus();
       };
     }
 
     load();
+
+    }); // end DOMContentLoaded
   </script>
 </body>
 </html>

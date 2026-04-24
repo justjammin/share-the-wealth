@@ -25,6 +25,7 @@ class Settings:
     ALPACA_SECRET_KEY: str = os.getenv("ALPACA_SECRET_KEY", "")
     ALPACA_PAPER: bool = os.getenv("ALPACA_PAPER", "true").lower() in ("true", "1", "yes")
     ANTHROPIC_API_KEY: str = os.getenv("ANTHROPIC_API_KEY", "")
+    QUIVER_API_KEY: str = os.getenv("QUIVER_API_KEY", "")
     # Local RAG (sentence-transformers; no embedding API cost)
     USE_LOCAL_RAG: bool = os.getenv("USE_LOCAL_RAG", "true").lower() in ("true", "1", "yes")
     ST_EMBEDDING_MODEL: str = os.getenv("ST_EMBEDDING_MODEL", "sentence-transformers/all-MiniLM-L6-v2")

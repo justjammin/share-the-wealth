@@ -6,3 +6,5 @@ __pycache__/
 .venv/
 mirror_state.json
 data/*.db
+.DS_Store
+.DS_Store
